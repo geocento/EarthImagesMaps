@@ -1,0 +1,81 @@
+<project name="EarthImagesMap" basedir="." default="default">
+
+    <property name="version" value="v0.1" />
+	<property name="src.dir" value="js" />
+    <property name="artifactsdir" value="production" />
+
+    <target name="default" depends="prepare, js.minify, css.minify, deploy">
+
+    </target>
+
+    <target name="prepare">
+        <delete>
+            <fileset dir="${artifactsdir}">
+                <include name="*"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="js.minify">
+
+        <filelist id="filelist" dir="${src.dir}">
+            <file name="cesium.js"/>
+            <file name="DrawHelper.js"/>
+            <file name="Graticule.js"/>
+            <file name="InfoWindow.js"/>
+        </filelist>
+
+        <concat destfile="${artifactsdir}/cesium${version}.js" encoding="UTF-8" outputencoding="UTF-8" fixlastline="true">
+            <filelist refid="filelist" />
+        </concat>
+
+        <copyfile src="${src.dir}/maps.js" dest="${artifactsdir}/maps${version}.js"></copyfile>
+
+        <apply executable="java" force="true">
+            <arg line="-jar"></arg>
+            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg line="-o"></arg>
+            <targetfile></targetfile>
+            <srcfile></srcfile>
+
+            <globmapper from="*.js" to="${artifactsdir}/*.js"/>
+            <fileset id="jsFiles" dir="${artifactsdir}">
+                <include name="*.js" />
+            </fileset>
+        </apply>
+    </target>
+
+    <target name="css.minify">
+
+        <filelist id="filelist" dir="${src.dir}">
+            <file name="cesium.css"/>
+            <file name="DrawHelper.css"/>
+        </filelist>
+
+        <concat destfile="${artifactsdir}/cesium.css" encoding="UTF-8" outputencoding="UTF-8" fixlastline="true">
+            <filelist refid="filelist" />
+        </concat>
+
+        <copyfile src="${src.dir}/maps.css" dest="${artifactsdir}/maps.css"></copyfile>
+
+        <apply executable="java" force="true">
+            <arg line="-jar"></arg>
+            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg line="-o"></arg>
+            <targetfile></targetfile>
+            <srcfile></srcfile>
+
+            <globmapper from="*.css" to="${artifactsdir}/*.css"/>
+            <fileset id="cssFiles" dir="${artifactsdir}">
+                <include name="*.css" />
+            </fileset>
+        </apply>
+    </target>
+
+	<target name="deploy">
+        <copydir src="${src.dir}/Cesium" dest="${artifactsdir}/Cesium"></copydir>
+        <copydir src="${src.dir}/clipper" dest="${artifactsdir}/clipper"></copydir>
+        <copydir src="img" dest="${artifactsdir}/img"></copydir>
+	</target>
+
+</project>
