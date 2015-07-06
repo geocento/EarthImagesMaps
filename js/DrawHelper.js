@@ -1282,7 +1282,7 @@ var DrawHelper = (function() {
                 var _self = this;
                 // create the markers and handlers for the editing
                 if(this._markers == null) {
-                    var markers = new _.BillboardGroup(drawHelper, dragBillboard);
+                    var markers = new _.BillboardGroup(drawHelper, this.dragBillboard);
                     var editMarkers = new _.BillboardGroup(drawHelper, dragHalfBillboard);
                     // function for updating the edit markers around a certain point
                     function updateHalfMarkers(index, positions) {
@@ -1401,11 +1401,13 @@ var DrawHelper = (function() {
 
         }
 
-        DrawHelper.PolylinePrimitive.prototype.setEditable = function() {
+        DrawHelper.PolylinePrimitive.prototype.setEditable = function(options) {
 
             if(this.setEditMode) {
                 return;
             }
+
+            this.dragBillboard = options && options.dragBillboard ? options.dragBillboard : dragBillboard;
 
             var polyline = this;
             polyline.isPolygon = false;
@@ -1440,7 +1442,13 @@ var DrawHelper = (function() {
 
         }
 
-        DrawHelper.PolygonPrimitive.prototype.setEditable = function() {
+        DrawHelper.PolygonPrimitive.prototype.setEditable = function(options) {
+
+            if(this.setEditMode) {
+                return;
+            }
+
+            this.dragBillboard = options && options.dragBillboard ? options.dragBillboard : dragBillboard;
 
             var polygon = this;
             polygon.asynchronous = false;

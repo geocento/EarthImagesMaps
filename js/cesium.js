@@ -1104,7 +1104,7 @@ var CesiumMaps = (function() {
 
     }
 
-    _.uniRuler = function(globe, polylineCoordinates, color, thickness, opacity, editCallback, dragMarkerIcon, editMarkerIcon) {
+    _.uniRuler = function(globe, polylineCoordinates, color, thickness, opacity, editCallback) {
 
         // handle case where constructor is empty
         if(polylineCoordinates == undefined || polylineCoordinates.length == undefined || polylineCoordinates.length < 4) {
@@ -1117,7 +1117,7 @@ var CesiumMaps = (function() {
         });
         globe._scene.primitives.add(surface);
 
-        surface.setEditable();
+        surface.setEditable({dragBillboard: {iconUrl: "./img/ruler.png", shiftX: 16, shiftY: -16}});
         surface.setEditMode(true);
         surface.addListener('onEdited', function(event){
             // keep edited
@@ -1126,9 +1126,7 @@ var CesiumMaps = (function() {
         });
 
         // force edit to true
-        var parentEditMode = surface.setEditMode;
         surface.setEditMode = function() {
-            parentEditMode(true);
         }
 
         globe.addOverlay(this);
@@ -1137,6 +1135,13 @@ var CesiumMaps = (function() {
             if(!surface.isDestroyed()) {
                 surface.setHighlighted && surface.setHighlighted(false);
                 globe._scene.primitives.remove(surface);
+                if(surface._markers != null) {
+                    surface._markers.remove();
+                    surface._editMarkers.remove();
+                    surface._markers = null;
+                    surface._editMarkers = null;
+                    surface._globeClickhandler.destroy();
+                }
             }
         }
 

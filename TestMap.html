@@ -88,6 +88,7 @@ and open the template in the editor.
             var displayCoordinates = false;
             var displayGrid = false;
             var mapIndex = 0;
+            var ruler = null;
             library.createMap(0, 0, 0, null, document.getElementById("container"),
                 function(map) {
                     var tests = {
@@ -131,7 +132,10 @@ and open the template in the editor.
                             map.displayCoordinates(displayCoordinates);
                         },
                         testRuler: function() {
-                            new library.uniRuler(map, [0, 0, 10, 10], '#ff0', 1, 1.0, function() {}, {url: "./img/ruler.png", shiftX: 0, shiftY: 32});
+                            if(ruler) {
+                                ruler.remove();
+                            }
+                            ruler = new library.uniRuler(map, [0, 0, 10, 10], '#ff0', 1, 1.0, function() {});
                         },
                         testZoomRectangle: function() {
                             map.addZoomOnShift(function(neLat, neLng, swLat, swLng){

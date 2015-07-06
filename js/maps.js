@@ -1989,7 +1989,7 @@ var googleMapsV3 = (function() {
         return gm.geometry.spherical.computeLength(this.surface.getPath());
     }
 
-    _.uniRuler = function(map2D, coordinates, color, thickness, opacity, editCallback, dragMarkerIcon, editMarkerIcon) {
+    _.uniRuler = function(map2D, coordinates, color, thickness, opacity, editCallback) {
 
         this.map2D = map2D;
 
@@ -2013,8 +2013,7 @@ var googleMapsV3 = (function() {
         this.isHighlighted = false;
         this.path = this.surface.getPath();
         this.editable = true;
-        this.dragMarker = dragMarkerIcon;
-        this.editMarker = editMarkerIcon;
+        this.dragMarker = {url: "./img/ruler.png", shiftX: 0, shiftY: 32};
         map2D.overlaysArray.push(this);
         this.minPoints = 2;
 
