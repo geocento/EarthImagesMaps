@@ -119,7 +119,7 @@ var InfoWindow = (function() {
         var coordinates = Cesium.SceneTransforms.wgs84ToWindowCoordinates(this._scene, this._position);
         if(coordinates) {
             this._div.style.left = (Math.floor(coordinates.x) - this._div.clientWidth / 2) + "px";
-            this._div.style.bottom = (Math.floor(coordinates.y) + 8) + "px";
+            this._div.style.top = (Math.floor(coordinates.y) - 8 - this._div.clientHeight) + "px";
         }
     }
 

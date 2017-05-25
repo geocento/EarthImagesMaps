@@ -166,6 +166,10 @@ var googleMapsV3 = (function() {
         function m(div, lat, lng, zoom, mapId, callback, failure) {
             var latlng = new gm.LatLng(lat, lng);
             this.mapTypeIds = [gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, gm.MapTypeId.SATELLITE, gm.MapTypeId.TERRAIN];
+            // check map id
+            if(!mapId || this.mapTypeIds.indexOf(mapId) == -1) {
+                mapId = gm.MapTypeId.HYBRID;
+            }
             var myOptions = {
                 zoom: zoom,
                 minZoom: 1,
@@ -186,7 +190,7 @@ var googleMapsV3 = (function() {
                     position: gm.ControlPosition.BOTTOM_LEFT
                 },
                 rotateControl: true,
-                mapTypeId: mapId ? mapId : gm.MapTypeId.HYBRID
+                mapTypeId: mapId
             };
             var map = new gm.Map(div, myOptions);
             map.setTilt(0);
@@ -442,8 +446,17 @@ var googleMapsV3 = (function() {
             return this.map.getZoom();
         }
 
-        m.prototype.addControl = function(control) {
-            this.map.controls[gm.ControlPosition.TOP_RIGHT].push(control);
+        m.prototype.addControl = function(control, position) {
+            var mapPosition = gm.ControlPosition.TOP_RIGHT;
+            if(position) {
+                if(position == 'topLeft') {
+                    mapPosition = gm.ControlPosition.LEFT_TOP;
+                }
+                if(position == 'bottomLeft') {
+                    mapPosition = gm.ControlPosition.LEFT_BOTTOM;
+                }
+            }
+            this.map.controls[mapPosition].push(control);
         }
 
         m.prototype.setBounds = function(swLat, swLng, neLat, neLng) {
@@ -575,7 +588,7 @@ var googleMapsV3 = (function() {
                     var mapDiv = map.getDiv();
                     gme.addDomListener(mapDiv, "mousemove", function(event) {
                         var latLng = map.convertScreenPositionToLatLng(event.clientX, event.clientY);
-                        div.innerHTML = "Position: lng " + latLng.lng().toFixed(4) + " deg, lat " + latLng.lat().toFixed(4) + " deg";
+                        div.innerHTML = "Position: long " + latLng.lng().toFixed(4) + " deg, lat " + latLng.lat().toFixed(4) + " deg";
                     });
                     this.div_ = div;
                 }
@@ -1610,9 +1623,10 @@ var googleMapsV3 = (function() {
 
             function complete(event) {
                 // callback first before removing markers and circle
-                var topLeft = topLeftMarker.getPosition();
-                var bottomRight = bottomRightMarker.getPosition();
-                callback(topLeft.lat(), topLeft.lng(), bottomRight.lat(), bottomRight.lng());
+                var bounds = new google.maps.LatLngBounds();
+                bounds.extend(topLeftMarker.getPosition());
+                bounds.extend(bottomRightMarker.getPosition());
+                callback(bounds.getNorthEast().lat(), bounds.getSouthWest().lng(), bounds.getSouthWest().lat(), bounds.getNorthEast().lng());
                 cleanUp();
             }
 
@@ -1781,7 +1795,13 @@ var googleMapsV3 = (function() {
             var _self = this;
 
             function markerDragged() {
+                var bounds = new google.maps.LatLngBounds();
+                bounds.extend(topLeftMarker.getPosition());
+                bounds.extend(bottomRightMarker.getPosition());
+                _self.callback(bounds.getNorthEast().lat(), bounds.getSouthWest().lng(), bounds.getSouthWest().lat(), bounds.getNorthEast().lng());
+/*
                 _self.callback(topLeftMarker.getPosition().lat(), topLeftMarker.getPosition().lng(), bottomRightMarker.getPosition().lat(), bottomRightMarker.getPosition().lng());
+*/
                 map2D.theTooltip.hide();
             }
 
@@ -1989,7 +2009,7 @@ var googleMapsV3 = (function() {
         return gm.geometry.spherical.computeLength(this.surface.getPath());
     }
 
-    _.uniRuler = function(map2D, coordinates, color, thickness, opacity, editCallback) {
+    _.uniRuler = function(map2D, coordinates, color, thickness, opacity, editCallback, dragMarkerIcon, editMarkerIcon) {
 
         this.map2D = map2D;
 
@@ -2013,7 +2033,8 @@ var googleMapsV3 = (function() {
         this.isHighlighted = false;
         this.path = this.surface.getPath();
         this.editable = true;
-        this.dragMarker = {url: "./img/ruler.png", shiftX: 0, shiftY: 32};
+        this.dragMarker = dragMarkerIcon;
+        this.editMarker = editMarkerIcon;
         map2D.overlaysArray.push(this);
         this.minPoints = 2;
 

@@ -220,7 +220,8 @@ var CesiumMaps = (function() {
             imageryLayers.indexOf(layer);
         }
 
-        gl.addControl = function(control) {
+        gl.addControl = function(control, position) {
+            // TODO - handle positions
             controlDiv.appendChild(control);
         }
 
@@ -246,7 +247,7 @@ var CesiumMaps = (function() {
                             var cartesian = scene.camera.pickEllipsoid(movement.endPosition, ellipsoid);
                             if (cartesian) {
                                 var cartographic = ellipsoid.cartesianToCartographic(cartesian);
-                                div.innerHTML = "Position: (lng: " + Cesium.Math.toDegrees(cartographic.longitude).toFixed(5) + ", lat: " + Cesium.Math.toDegrees(cartographic.latitude).toFixed(5) + ")";
+                                div.innerHTML = "Position: (long: " + Cesium.Math.toDegrees(cartographic.longitude).toFixed(5) + ", lat: " + Cesium.Math.toDegrees(cartographic.latitude).toFixed(5) + ")";
                             } else {
                                 div.innerHTML = "Position: ";
                             }
@@ -668,7 +669,7 @@ var CesiumMaps = (function() {
 
         this.setFillOpacity = function(opacity) {
             if(surface.material.uniforms.color.alpha != opacity) {
-                surface.material.uniforms.color.alpha = opacity;
+                surface.material.uniforms.color.alpha = Math.max(0.004, opacity);
             }
         }
 
@@ -833,7 +834,9 @@ var CesiumMaps = (function() {
         }
 
         this.setFillOpacity = function(opacity) {
-            surface.material.uniforms.color.alpha = opacity;
+            if(surface.material.uniforms.color.alpha != opacity) {
+                surface.material.uniforms.color.alpha = Math.max(0.004, opacity);
+            }
         }
 
         this.setVisible = function(visible) {
@@ -950,7 +953,9 @@ var CesiumMaps = (function() {
         }
 
         this.setFillOpacity = function(opacity) {
-            surface.material.uniforms.color.alpha = opacity;
+            if(surface.material.uniforms.color.alpha != opacity) {
+                surface.material.uniforms.color.alpha = Math.max(0.004, opacity);
+            }
         }
 
         this.sendToBack = function() {
@@ -1104,7 +1109,7 @@ var CesiumMaps = (function() {
 
     }
 
-    _.uniRuler = function(globe, polylineCoordinates, color, thickness, opacity, editCallback) {
+    _.uniRuler = function(globe, polylineCoordinates, color, thickness, opacity, editCallback, dragMarkerIcon, editMarkerIcon) {
 
         // handle case where constructor is empty
         if(polylineCoordinates == undefined || polylineCoordinates.length == undefined || polylineCoordinates.length < 4) {
@@ -1117,7 +1122,7 @@ var CesiumMaps = (function() {
         });
         globe._scene.primitives.add(surface);
 
-        surface.setEditable({dragBillboard: {iconUrl: "./img/ruler.png", shiftX: 16, shiftY: -16}});
+        surface.setEditable();
         surface.setEditMode(true);
         surface.addListener('onEdited', function(event){
             // keep edited
@@ -1126,7 +1131,9 @@ var CesiumMaps = (function() {
         });
 
         // force edit to true
+        var parentEditMode = surface.setEditMode;
         surface.setEditMode = function() {
+            parentEditMode(true);
         }
 
         globe.addOverlay(this);
@@ -1135,13 +1142,14 @@ var CesiumMaps = (function() {
             if(!surface.isDestroyed()) {
                 surface.setHighlighted && surface.setHighlighted(false);
                 globe._scene.primitives.remove(surface);
+/*
                 if(surface._markers != null) {
                     surface._markers.remove();
                     surface._editMarkers.remove();
                     surface._markers = null;
                     surface._editMarkers = null;
                     surface._globeClickhandler.destroy();
-                }
+*/
             }
         }
 
@@ -1237,7 +1245,9 @@ var CesiumMaps = (function() {
             return;
         }
         // check for URL
-        this.directURL = testUrl.indexOf(window.location.protocol + "//" + window.location.host) == 0;
+        // check if relative path or same domain
+        this.directURL = /^(?:[a-z]+:)?\/\//i.test(testUrl) ||
+            (testUrl.indexOf(window.location.protocol + "//" + window.location.host) == 0);
         // check for CORS support on both sides
         if(!this.directURL) {
             var _self = this;
