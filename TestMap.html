@@ -4,11 +4,11 @@ and open the template in the editor.
 -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
+<head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-	<script src="js/Cesium/Cesium.js?newversion"></script>
+    <script src="js/Cesium/Cesium.js?newversion"></script>
     <script type="text/javascript" src="js/InfoWindow.js"></script>
     <script type="text/javascript" src="js/Graticule.js"></script>
     <script type="text/javascript" src="js/DrawHelper.js"></script>
@@ -19,9 +19,9 @@ and open the template in the editor.
 
     <script type="text/javascript" src="js/spatial_query/spatial_query.js"></script>
 
-      <script type="text/javascript" src="js/clipper/clipper.js"></script>
+    <script type="text/javascript" src="js/clipper/clipper.js"></script>
 
-      <style type="text/css">
+    <style type="text/css">
         @import url(js/Cesium/Widgets/CesiumWidget/CesiumWidget.css);
         @import url(js/cesium.css);
         #container {
@@ -61,137 +61,136 @@ and open the template in the editor.
         }
     </style>
 
-      <script type="application/javascript">
-          var mapsConfig = {
-              googleMapId: "hybrid",
-              bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf'
-          };
-      </script>
+    <script type="application/javascript">
+        var mapsConfig = {
+            googleMapId: "hybrid",
+            bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf'
+        };
+    </script>
 
-  </head>
-  <body onload="start(CesiumMaps)">
+</head>
+<body onload="start(googleMapsV3)">
 
-    <div id="container"></div>
-    <div id="toolbar">
-    </div>
-    <div id="logging">
-    </div>
+<div id="container"></div>
+<div id="toolbar">
+</div>
+<div id="logging">
+</div>
 
-    <script type="text/javascript">
-        var zoomLevel = 7;
-        var position = [10.0, 10.0];
-        function start(library) {
-        	// make sure the map div is empty
-        	document.getElementById("container").innerHTML = "";
-            var map;
-            var geodetic = true;
-            var displayCoordinates = false;
-            var displayGrid = false;
-            var mapIndex = 0;
-            var ruler = null;
-            library.createMap(0, 0, 0, null, document.getElementById("container"),
-                function(map) {
-                    var tests = {
-                        changeLibrary: function() {
-                            zoomLevel = map.getZoomLevel();
-                            position = map.getCenter();
-                            start(library == googleMapsV3 ? CesiumMaps : googleMapsV3);
-                        },
-                        testCenter: function() {
-                            map.setCenter(40, -3);
-                            alert('lat is: ' + map.getCenter()[0]);
-                        },
-                        testGetCenter: function() {
-                            alert('lat is: ' + map.getCenter()[0]);
-                        },
-                        testZoom: function() {
-                            map.setZoomLevel(Math.floor(Math.random() * 12));
-                            alert('zoom is: ' + map.getZoomLevel());
-                        },
-                        testBounds: function() {
-                            map.setBounds(-10, -10, 10, 10);
-                            alert('zoom is: ' + map.getZoomLevel());
-                        },
-                        testGetBounds: function() {
-                            var bounds = map.getBounds();
-                            alert('Bounds are: ' + bounds.swLat + ", " + bounds.swLng + ", " + bounds.neLat + ", " + bounds.neLng);
-                        },
-                        testBaseMaps: function() {
-                            map.setMapId("Bing Road Maps");
-                        },
-                        testControl: function() {
-                            var control = document.createElement('div');
-                            control.innerHTML = "Control";
-                            control.style.background = 'white';
-                            control.style.padding = '5px';
-                            control.style.margin = '5px';
-                            map.addControl(control);
-                        },
-                        testDisplayCoordinates: function() {
-                        	displayCoordinates = !displayCoordinates;
-                            map.displayCoordinates(displayCoordinates);
-                        },
-                        testRuler: function() {
-                            if(ruler) {
-                                ruler.remove();
-                            }
-                            ruler = new library.uniRuler(map, [0, 0, 10, 10], '#ff0', 1, 1.0, function() {});
-                        },
-                        testZoomRectangle: function() {
-                            map.addZoomOnShift(function(neLat, neLng, swLat, swLng){
-                                map.setBounds(neLat, neLng, swLat, swLng);
-                            });
-                        },
-                        testAddMapId: function() {
-                            map.addMapType("OSM", "OSM", "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", true, 0, 12);
-                            map.setMapId("OSM");
-                        },
-                        testAddWMSMapId: function() {
-                            map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
-                            map.setMapId("Population");
-                        },
-                        testDisplayGraticule: function() {
-                            displayGrid = !displayGrid;
-                            map.displayCoordinatesGrid(displayGrid);
-                        },
-                        testPolygon: function() {
-                            library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic, function(coordinates){
-                                        var polygon = new library.uniPolygon(map, coordinates, {color: '#ff0', thickness: 1, opacity: 1.0, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false, callback: function(){
-                                            var center = polygon.getCenter();
-                                            marker.setPosition(center[0], center[1]);
-                                        }});
+<script type="text/javascript">
+var zoomLevel = 7;
+var position = [10.0, 10.0];
+function start(library) {
+    // make sure the map div is empty
+    document.getElementById("container").innerHTML = "";
+    var map;
+    var geodetic = true;
+    var displayCoordinates = false;
+    var displayGrid = false;
+    var mapIndex = 0;
+    library.createMap(0, 0, 0, "hybrid", document.getElementById("container"),
+            function(map) {
+                var tests = {
+                    changeLibrary: function() {
+                        zoomLevel = map.getZoomLevel();
+                        position = map.getCenter();
+                        start(library == googleMapsV3 ? CesiumMaps : googleMapsV3);
+                    },
+                    testCenter: function() {
+                        map.setCenter(40, -3);
+                        alert('lat is: ' + map.getCenter()[0]);
+                    },
+                    testGetCenter: function() {
+                        alert('lat is: ' + map.getCenter()[0]);
+                    },
+                    testZoom: function() {
+                        map.setZoomLevel(Math.floor(Math.random() * 12));
+                        alert('zoom is: ' + map.getZoomLevel());
+                    },
+                    testBounds: function() {
+                        map.setBounds(-10, -10, 10, 10);
+                        alert('zoom is: ' + map.getZoomLevel());
+                    },
+                    testGetBounds: function() {
+                        var bounds = map.getBounds();
+                        alert('Bounds are: ' + bounds.swLat + ", " + bounds.swLng + ", " + bounds.neLat + ", " + bounds.neLng);
+                    },
+                    testBaseMaps: function() {
+                        map.setMapId("Bing Road Maps");
+                    },
+                    testControl: function() {
+                        var control = document.createElement('div');
+                        control.innerHTML = "Control";
+                        control.style.background = 'white';
+                        control.style.padding = '5px';
+                        control.style.margin = '5px';
+                        map.addControl(control, "topLeft");
+                    },
+                    testDisplayCoordinates: function() {
+                        displayCoordinates = !displayCoordinates;
+                        map.displayCoordinates(displayCoordinates);
+                    },
+                    testRuler: function() {
+                        new library.uniRuler(map, [0, 0, 10, 10], '#ff0', 1, 1.0, function() {}, {url: "./img/ruler.png", shiftX: 0, shiftY: 32});
+                    },
+                    testZoomRectangle: function() {
+                        map.addZoomOnShift(function(neLat, neLng, swLat, swLng){
+                            map.setBounds(neLat, neLng, swLat, swLng);
+                        });
+                    },
+                    testAddMapId: function() {
+                        map.addMapType("OSM", "OSM", "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", true, 0, 12);
+                        map.setMapId("OSM");
+                    },
+                    testAddWMSMapId: function() {
+                        map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
+                        map.setMapId("Population");
+                    },
+                    testDisplayGraticule: function() {
+                        displayGrid = !displayGrid;
+                        map.displayCoordinatesGrid(displayGrid);
+                    },
+                    testPolygon: function() {
+                        library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic, function(coordinates){
+                                    var polygon = new library.uniPolygon(map, coordinates, {color: '#ff0', thickness: 1, opacity: 1.0, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false, callback: function(){
                                         var center = polygon.getCenter();
-                                        var marker = new library.uniMarker(map, center[0], center[1], 'img/markerPolygon.png', 16, 32);
-                                        marker.setListener('drag', function() {
-                                            polygon.setCenter(marker.getLat(), marker.getLng());
-                                        });
-                                        polygon.sendToBack();
-
-                                        var staticPolygon = new library.uniPolygon(map, coordinates, '#5555FF', 1, 1.0, '#FF55FF', 0.7, true, geodetic);
-                                        staticPolygon.setClickHandler(function(){alert("Clicked on polygon, bounds are " + staticPolygon.getEOBounds())});
-                                        staticPolygon.setTooltip("Static polygon");
-                                        staticPolygon.setCenter(0, 0);
-                                    }, 0, 0
-                            );
-                        },
-                        testMarker: function() {
-                            library.createPoint(map, function(coordinates){
-                                        var marker = new library.uniMarker(map, coordinates[0], coordinates[1], '/img/markerPolygon.png', 16, 35);
-                                        marker.setListener('dragEnd', function(){
-                                            alert('Marker modified');
-                                        });
-                                        marker.setClickHandler(function(){
-                                            map.openInfoWindow(marker.getLat(), marker.getLng(), "Marker clicked");
-                                        });
-                            });
-                        },
-                        testRectangle: function() {
-                            library.createRectangle(map, '#5555FF', 1, 1.0, '#FF55FF', 0.7, false, geodetic,
-                                function(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng){
-                                    var extent = new library.uniRectangle(map, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, {color: '#ff0', thickness: 1, opacity: 1.0, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false, callback: function(){
-                                        var center = extent.getCenter();
                                         marker.setPosition(center[0], center[1]);
                                     }});
+                                    var center = polygon.getCenter();
+                                    var marker = new library.uniMarker(map, center[0], center[1], 'img/markerPolygon.png', 16, 32);
+                                    marker.setListener('drag', function() {
+                                        polygon.setCenter(marker.getLat(), marker.getLng());
+                                    });
+                                    polygon.sendToBack();
+
+                                    var staticPolygon = new library.uniPolygon(map, coordinates, '#5555FF', 1, 1.0, '#FF55FF', 0.7, true, geodetic);
+                                    staticPolygon.setClickHandler(function(){alert("Clicked on polygon, bounds are " + staticPolygon.getEOBounds())});
+                                    staticPolygon.setTooltip("Static polygon");
+                                    staticPolygon.setCenter(0, 0);
+                                }, 0, 0
+                        );
+                    },
+                    testMarker: function() {
+                        library.createPoint(map, function(coordinates){
+                            var marker = new library.uniMarker(map, coordinates[0], coordinates[1], '/img/markerPolygon.png', 16, 35);
+                            marker.setListener('dragEnd', function(){
+                                alert('Marker modified');
+                            });
+                            marker.setClickHandler(function(){
+                                map.openInfoWindow(marker.getLat(), marker.getLng(), "Marker clicked");
+                            });
+                        });
+                    },
+                    testRectangle: function() {
+                        library.createRectangle(map, '#5555FF', 1, 1.0, '#FF55FF', 0.7, false, geodetic,
+                                function(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng){
+                                    alert("Top left is (lat " + topLeftLat + ", long " + topLeftLng + ") and bottom right is (lat " + bottomRightLat + ", long " + bottomRightLng + ")")
+                                    var extent = new library.uniRectangle(map, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, {color: '#ff0', thickness: 1, opacity: 1.0, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false,
+                                        callback: function(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng){
+                                            alert("Top left is (lat " + topLeftLat + ", long " + topLeftLng + ") and bottom right is (lat " + bottomRightLat + ", long " + bottomRightLng + ")")
+                                            var center = extent.getCenter();
+                                            marker.setPosition(center[0], center[1]);
+                                        }});
                                     var center = extent.getCenter();
                                     var marker = new library.uniMarker(map, center[0], center[1], './img/glyphicons_242_google_maps.png', 0, 16);
                                     marker.setDraggable(function(){});
@@ -199,262 +198,272 @@ and open the template in the editor.
                                         extent.setCenter(marker.getLat(), marker.getLng());
                                     });
                                 });
-                        },
-                        testCircle: function() {
-                            library.createCircle(map, '#5555FF', 1, 1.0, '#FF55FF', 0.7, true, geodetic,
-                                    function(lat, lng, radius){
-                                        var circle = new library.uniCircle(map, lat, lng, radius, {color: '#ff0', thickness: 1, opacity: 1.0, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false, callback: function(){
-                                            var center = circle.getCenter();
-                                            marker.setPosition(center[0], center[1]);
-                                        }});
-                                        var center = circle.getCenter();
-                                        var marker = new library.uniMarker(map, center[0], center[1], './img/glyphicons_242_google_maps.png', 0, 16);
-                                        marker.setDraggable(function(){});
-                                        marker.setListener('drag', function() {
-                                            circle.setCenter(marker.getLat(), marker.getLng());
-                                        });
-                                    });
-                        },
-                        testLine: function() {
-                            library.createPolyline(map, '#5555FF', 1, 1.0, true, geodetic, function(coordinates){
-                                var polyline = new library.uniPolyline(map, coordinates, '#ff0', 1, 1.0, true, geodetic, function(){
-                                    var center = polyline.getCenter();
-                                    marker.setPosition(center[0], center[1]);
-                                }, function(){}, {url: "./img/flag.png", shiftX: 0, shiftY: 31});
-                                var center = polyline.getCenter();
-                                var marker = new library.uniMarker(map, center[0], center[1], './img/glyphicons_242_google_maps.png', 0, 16);
-                                marker.setListener('drag', function() {
-                                    polyline.setCenter(marker.getLat(), marker.getLng());
-                                });
-                            });
-                        },
-                        testLineIcon: function() {
-                            library.createPolyline(map, '#5555FF', 1, 1.0, true, geodetic, function(coordinates){
-                                new library.uniPolyline(map, coordinates, '#5555FF', 1, 1.0, true, geodetic, function(){}, function(marker){alert(marker)}, {url: "./img/flag.png", shiftX: 0, shiftY: 31});
-                            }, undefined, undefined, {url: "./img/flag.png", shiftX: 0, shiftY: 31});
-                        },
-                        testConstrainedFrames: function(constrainedCoordinates, coordinates) {
-                            var constrainedFrame = new library.constrainedFrame(map, constrainedCoordinates, coordinates);
-                        },
-                        testConstrainedPolygon: function() {
-                            var coordinates = [10, 0, 0, 0, 0, 10];
-                            new library.uniPolygon(map, coordinates, {color: "#88ff88", fillOpacity: 0});
-                            var constrainedPolygon = new library.uniPolygon(map, coordinates, {constraint: coordinates, callback: function() {}});
-                        },
-                        testUnionPolygons: function() {
-                            var firstCoordinates = [10, 0, 0, 0, 0, 10];
-                            new library.uniPolygon(map, firstCoordinates, {color: "#88ff88", fillOpacity: 0});
-                            library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic,
-                                    function(coordinates){
-                                        // Compute the union of the given polygon with another polygon
-                                        var unionCoordinates = $p(tests.transformToCoords(coordinates)).union_2d(tests.transformToCoords(firstCoordinates)).to_point_array();
-                                        new library.uniPolygon(map, tests.transformToCoordinates(unionCoordinates), {color: "#8888ff", fillOpacity: 0});
-                                    }
-                            );
-                        },
-                        testBufferClipperPolyline: function() {
-                            new library.uniPolygon(map, clipper.bufferPath([0, 0, 0, 10, 10, 10, 10, 0], 100000), {color: "#8888ff", fillOpacity: 0});
-                        },
-                        testClipClipperPolyline: function() {
-                            var firstCoordinates = [0, 0, 0, 10, 10, 10, 10, 0, 0, 0];
-                            var secondCoordinates = [5, 5, 5, 7, 15, 7, 15, 5, 5, 5];
-                            new library.uniPolygon(map, firstCoordinates, {color: "#88ffff", fillOpacity: 0});
-                            new library.uniPolygon(map, secondCoordinates, {color: "#ff88ff", fillOpacity: 0});
-
-                            new library.uniPolygon(map, clipper.clipPath(firstCoordinates, secondCoordinates), {color: "#8888ff", fillOpacity: 0});
-                        },
-                        testClipperPolygons: function() {
-                            library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic,
-                                    function(firstCoordinates){
-                                        new library.uniPolygon(map, firstCoordinates, {color: "#88ff88", fillOpacity: 0});
-                                        library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic,
-                                                function(coordinates){
-                                                    new library.uniPolygon(map, coordinates, {color: "#88ff88", fillOpacity: 0});
-                                                    // Compute the union of the given polygon with another polygon
-                                                    new library.uniPolygon(map, clipper.clipPath(firstCoordinates, coordinates), {color: "#8888ff", fillOpacity: 0});
-                                                }
-                                        );
-                                    }
-                            );
-                        },
-                        testWMS: function() {
-                            if(this.uniWMS) {
-                                this.uniWMS.setVisible(false);
-                            } else {
-                                this.uniWMS = new library.uniWMSLayer(map, "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3", "gpw-v3:gpw-v3-population-density_2000", "Population", null, "EPSG:3857", -90, -180, 90, 180);
-                                this.uniWMS.setVisible(true);
-                                this.uniWMS.setOpacity(1.0); //Math.random());
-                            }
-                        },
-                        testOpenStreetMaps: function() {
-                            var uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey", null, "EPSG:3857");
-                            uniWMS.setVisible(true);
-                        },
-                        testTMS: function() {
-                            var uniTMS = new library.uniTMSLayer(map, "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", "ESRI ArcGIS", true, -90, -180, 90, 180);
-                            uniTMS.setVisible(true);
-                            return uniTMS;
-                        },
-                        testInfoWindow: function() {
-                            map.openInfoWindow(0, 0, 'Test text only');
-                        },
-                        testInfoWindowWidget: function() {
-                            var testWidget = document.createElement('button');
-                            testWidget.innerHTML = 'Test';
-                            testWidget.onclick = function(){alert('Clicked!')};
-                            map.openInfoWindowWidget(0, 0, testWidget);
-                        },
-                        testMapsIds: function() {
-                            var mapsList = map.getMapTypeIds();
-                            alert(mapsList[mapIndex]);
-                            map.setMapId(mapsList[mapIndex++]);
-                        },
-                        testCleanUp: function() {
-                            map.cleanUp();
-                        }
-                    };
-
-                    addTests(tests);
-                    map.setCenter(position[0], position[1]);
-                    map.setZoomLevel(zoomLevel);
-                },
-                function() {
-
-                }
-            );
-
-            var srsConversions = (function() {
-                var num, x, a, w1, w2, w3;
-                return {
-                    "EPSG:4326": function(x, y) {
-/*
-                        var x = xMercator;
-                        var y = yMercator;
-                        var w1 = x = x / 6378137.0;
-                        var w2 = x * 57.295779513082323;
-                        var w3 = Math.floor((x + 180.0) / 360.0);
-                        x = w2 - (w3 * 360.0);
-                        y = (1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * y) / 6378137.0)))) * 57.295779513082323;
-                        return [y, x];
-*/
-                        if ((Math.abs(x) > 20037508.3427892) || (Math.abs(y) > 20037508.3427892))
-                            return null;
-                        w1 = x = x / 6378137.0;
-                        w2 = x * 57.295779513082323;
-                        w3 = Math.floor((x + 180.0) / 360.0);
-                        return [(1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * y) / 6378137.0)))) * 57.295779513082323, w2 - (w3 * 360.0)];
                     },
-                    "EPSG:3857": function(lat, lng) {
-                        if ((Math.abs(lng) > 180 || Math.abs(lat) > 90))
-                            return;
+                    testCircle: function() {
+                        library.createCircle(map, '#5555FF', 1, 1.0, '#FF55FF', 0.7, true, geodetic,
+                                function(lat, lng, radius){
+                                    var circle = new library.uniCircle(map, lat, lng, radius, {color: '#ff0', thickness: 1, opacity: 1.0, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false, callback: function(){
+                                        var center = circle.getCenter();
+                                        marker.setPosition(center[0], center[1]);
+                                    }});
+                                    var center = circle.getCenter();
+                                    var marker = new library.uniMarker(map, center[0], center[1], './img/glyphicons_242_google_maps.png', 0, 16);
+                                    marker.setDraggable(function(){});
+                                    marker.setListener('drag', function() {
+                                        circle.setCenter(marker.getLat(), marker.getLng());
+                                    });
+                                });
+                    },
+                    testLine: function() {
+                        library.createPolyline(map, '#5555FF', 1, 1.0, true, geodetic, function(coordinates){
+                            var polyline = new library.uniPolyline(map, coordinates, '#ff0', 1, 1.0, true, geodetic, function(){
+                                var center = polyline.getCenter();
+                                marker.setPosition(center[0], center[1]);
+                            }, function(){}, {url: "./img/flag.png", shiftX: 0, shiftY: 31});
+                            var center = polyline.getCenter();
+                            var marker = new library.uniMarker(map, center[0], center[1], './img/glyphicons_242_google_maps.png', 0, 16);
+                            marker.setListener('drag', function() {
+                                polyline.setCenter(marker.getLat(), marker.getLng());
+                            });
+                        });
+                    },
+                    testLineIcon: function() {
+                        library.createPolyline(map, '#5555FF', 1, 1.0, true, geodetic, function(coordinates){
+                            new library.uniPolyline(map, coordinates, '#5555FF', 1, 1.0, true, geodetic, function(){}, function(marker){alert(marker)}, {url: "./img/flag.png", shiftX: 0, shiftY: 31});
+                        }, undefined, undefined, {url: "./img/flag.png", shiftX: 0, shiftY: 31});
+                    },
+                    testConstrainedFrames: function(constrainedCoordinates, coordinates) {
+                        var constrainedFrame = new library.constrainedFrame(map, constrainedCoordinates, coordinates);
+                    },
+                    testConstrainedPolygon: function() {
+                        var coordinates = [10, 0, 0, 0, 0, 10];
+                        new library.uniPolygon(map, coordinates, {color: "#88ff88", fillOpacity: 0});
+                        var constrainedPolygon = new library.uniPolygon(map, coordinates, {constraint: coordinates, callback: function() {}});
+                    },
+                    testUnionPolygons: function() {
+                        var firstCoordinates = [10, 0, 0, 0, 0, 10];
+                        new library.uniPolygon(map, firstCoordinates, {color: "#88ff88", fillOpacity: 0});
+                        library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic,
+                                function(coordinates){
+                                    // Compute the union of the given polygon with another polygon
+                                    var unionCoordinates = $p(tests.transformToCoords(coordinates)).union_2d(tests.transformToCoords(firstCoordinates)).to_point_array();
+                                    new library.uniPolygon(map, tests.transformToCoordinates(unionCoordinates), {color: "#8888ff", fillOpacity: 0});
+                                }
+                        );
+                    },
+                    testBufferClipperPolyline: function() {
+                        new library.uniPolygon(map, clipper.bufferPath([0, 0, 0, 10, 10, 10, 10, 0], 100000), {color: "#8888ff", fillOpacity: 0});
+                    },
+                    testClipClipperPolyline: function() {
+                        var firstCoordinates = [0, 0, 0, 10, 10, 10, 10, 0, 0, 0];
+                        var secondCoordinates = [5, 5, 5, 7, 15, 7, 15, 5, 5, 5];
+                        new library.uniPolygon(map, firstCoordinates, {color: "#88ffff", fillOpacity: 0});
+                        new library.uniPolygon(map, secondCoordinates, {color: "#ff88ff", fillOpacity: 0});
 
-                        num = lng * 0.017453292519943295;
-                        x = 6378137.0 * num;
-                        a = lat * 0.017453292519943295;
-
-                        return [x, 3189068.5 * Math.log((1.0 + Math.sin(a)) / (1.0 - Math.sin(a)))];
+                        new library.uniPolygon(map, clipper.clipPath(firstCoordinates, secondCoordinates), {color: "#8888ff", fillOpacity: 0});
+                    },
+                    testClipperPolygons: function() {
+                        library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic,
+                                function(firstCoordinates){
+                                    new library.uniPolygon(map, firstCoordinates, {color: "#88ff88", fillOpacity: 0});
+                                    library.createPolygon(map, '#5555FF', 5, 1.0, '#FF55FF', 0.7, true, geodetic,
+                                            function(coordinates){
+                                                new library.uniPolygon(map, coordinates, {color: "#88ff88", fillOpacity: 0});
+                                                // Compute the union of the given polygon with another polygon
+                                                new library.uniPolygon(map, clipper.clipPath(firstCoordinates, coordinates), {color: "#8888ff", fillOpacity: 0});
+                                            }
+                                    );
+                                }
+                        );
+                    },
+                    testWMS: function() {
+                        if(this.uniWMS) {
+                            this.uniWMS.setVisible(false);
+                        } else {
+                            /*
+                             this.uniWMS = new library.uniWMSLayer(map, "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3", "gpw-v3:gpw-v3-population-density_2000", "Population", null, "EPSG:3857", -90, -180, 90, 180);
+                             */
+                            this.uniWMS = new library.uniWMSLayer(map, "http://projects.geocento.com/sitemonitoring/overlay?filename=LC81900312015351LGN00.tiff&", //"http://192.168.2.42:8080/CMLFMC"
+                                    //"/getql?productid=DG-1050410012309400&",
+                                    "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                            /*
+                             this.uniWMS = new library.uniWMSLayer(map, "http://localhost:8889" + //"http://192.168.2.42:8080/CMLFMC"
+                             //"/getql?productid=DG-1050410012309400&",
+                             "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                             */
+                            this.uniWMS.setVisible(true);
+                            this.uniWMS.setOpacity(1.0); //Math.random());
+                        }
+                    },
+                    testOpenStreetMaps: function() {
+                        var uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey", null, "EPSG:3857");
+                        uniWMS.setVisible(true);
+                    },
+                    testTMS: function() {
+                        var uniTMS = new library.uniTMSLayer(map, "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", "ESRI ArcGIS", true, -90, -180, 90, 180);
+                        uniTMS.setVisible(true);
+                        return uniTMS;
+                    },
+                    testInfoWindow: function() {
+                        map.openInfoWindow(0, 0, 'Test text only');
+                    },
+                    testInfoWindowWidget: function() {
+                        var testWidget = document.createElement('button');
+                        testWidget.innerHTML = 'Test';
+                        testWidget.onclick = function(){alert('Clicked!')};
+                        map.openInfoWindowWidget(0, 0, testWidget);
+                    },
+                    testMapsIds: function() {
+                        var mapsList = map.getMapTypeIds();
+                        alert(mapsList[mapIndex]);
+                        map.setMapId(mapsList[mapIndex++]);
+                    },
+                    testCleanUp: function() {
+                        map.cleanUp();
                     }
                 };
-            } ());
 
-            function transformToWebMercator(coordinates) {
-                var coords = [], index, coord, transform = srsConversions["EPSG:3857"];
-                for(index = 0; index < coordinates.length; index += 2) {
-                    coord = transform(coordinates[index], coordinates[index + 1]);
-                    coords.push(coord[0], coord[1])
-                }
-                return coords;
+                addTests(tests);
+                map.setCenter(position[0], position[1]);
+                map.setZoomLevel(zoomLevel);
+            },
+            function() {
+
             }
+    );
 
-            function transformFromWebMercator(coords) {
-                var coordinates = [], index, coord, transform = srsConversions["EPSG:4326"];
-                for(index = 0; index < coords.length; index += 2) {
-                    coord = transform(coords[index], coords[index + 1]);
-                    coordinates.push(coord[0], coord[1])
-                }
-                return coordinates;
+    var srsConversions = (function() {
+        var num, x, a, w1, w2, w3;
+        return {
+            "EPSG:4326": function(x, y) {
+                /*
+                 var x = xMercator;
+                 var y = yMercator;
+                 var w1 = x = x / 6378137.0;
+                 var w2 = x * 57.295779513082323;
+                 var w3 = Math.floor((x + 180.0) / 360.0);
+                 x = w2 - (w3 * 360.0);
+                 y = (1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * y) / 6378137.0)))) * 57.295779513082323;
+                 return [y, x];
+                 */
+                if ((Math.abs(x) > 20037508.3427892) || (Math.abs(y) > 20037508.3427892))
+                    return null;
+                w1 = x = x / 6378137.0;
+                w2 = x * 57.295779513082323;
+                w3 = Math.floor((x + 180.0) / 360.0);
+                return [(1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * y) / 6378137.0)))) * 57.295779513082323, w2 - (w3 * 360.0)];
+            },
+            "EPSG:3857": function(lat, lng) {
+                if ((Math.abs(lng) > 180 || Math.abs(lat) > 90))
+                    return;
+
+                num = lng * 0.017453292519943295;
+                x = 6378137.0 * num;
+                a = lat * 0.017453292519943295;
+
+                return [x, 3189068.5 * Math.log((1.0 + Math.sin(a)) / (1.0 - Math.sin(a)))];
             }
-
-            function clipperTransform(coordinates) {
-                var coords = [], index;
-                for(index = 0; index < coordinates.length; index += 2) {
-                    // transform to mercator
-                    coords.push({"X": coordinates[index + 1], "Y": coordinates[index]});
-                }
-                return coords;
-            }
-
-            function transformFromClipper(coords) {
-                var coordinates = [], coord, index;
-                for(index = 0; index < coords.length; index++) {
-                    coord = coords[index];
-                    coordinates.push(coord.Y);
-                    coordinates.push(coord.X);
-                }
-                return coordinates;
-            }
-
-            function transformToCoords(coordinates) {
-                var coords = [], index;
-                for(index = 0; index < coordinates.length; index += 2) {
-                    // transform to mercator
-                    coords.push([coordinates[index], coordinates[index + 1]]);
-                }
-                return coords;
-            }
-
-            function transformReprojectedToCoords(coordinates) {
-                var coords = [], index, transform = srsConversions["EPSG:3857"];
-                for(index = 0; index < coordinates.length; index += 2) {
-                    // transform to mercator
-                    coords.push(transform(coordinates[index], coordinates[index + 1]));
-                }
-                return coords;
-            }
-
-            function transformReprojectedToCoordinates(coords) {
-                var coordinates = [], coord, index, transform = srsConversions["EPSG:4326"];
-                for(index = 0; index < coords.length; index++) {
-                    coord = transform(coords[index][0], coords[index][1]);
-                    coordinates.push(coord[0]);
-                    coordinates.push(coord[1]);
-                }
-                return coordinates;
-            }
-
-            function transformToCoordinates(coords) {
-                var coordinates = [], index;
-                for(index = 0; index < coords.length; index++) {
-                    coordinates.push(coords[index][0]);
-                    coordinates.push(coords[index][1]);
-                }
-                return coordinates;
-            }
-
-            function addTests(tests) {
-                var toolbar = document.getElementById("toolbar"), test, button;
-                toolbar.innerHTML = "";
-                for(test in tests) {
-                    button = document.createElement('button');
-                    button.innerHTML = test;
-                    button.onclick = tests[test];
-                    toolbar.appendChild(button);
-                }
-            }
-
-        }
-/*
-        function displayRuler() {
-            app.coordinatesDisplayed = !app.coordinatesDisplayed;
-            app.map.displayCoordinates(app.coordinatesDisplayed);
-        }
-        var uniWMS;
-        function toggleGeodetic() {
-            app.geodetic = !app.geodetic;
-        }
         };
-*/
-    </script>
-  </body>
+    } ());
+
+    function transformToWebMercator(coordinates) {
+        var coords = [], index, coord, transform = srsConversions["EPSG:3857"];
+        for(index = 0; index < coordinates.length; index += 2) {
+            coord = transform(coordinates[index], coordinates[index + 1]);
+            coords.push(coord[0], coord[1])
+        }
+        return coords;
+    }
+
+    function transformFromWebMercator(coords) {
+        var coordinates = [], index, coord, transform = srsConversions["EPSG:4326"];
+        for(index = 0; index < coords.length; index += 2) {
+            coord = transform(coords[index], coords[index + 1]);
+            coordinates.push(coord[0], coord[1])
+        }
+        return coordinates;
+    }
+
+    function clipperTransform(coordinates) {
+        var coords = [], index;
+        for(index = 0; index < coordinates.length; index += 2) {
+            // transform to mercator
+            coords.push({"X": coordinates[index + 1], "Y": coordinates[index]});
+        }
+        return coords;
+    }
+
+    function transformFromClipper(coords) {
+        var coordinates = [], coord, index;
+        for(index = 0; index < coords.length; index++) {
+            coord = coords[index];
+            coordinates.push(coord.Y);
+            coordinates.push(coord.X);
+        }
+        return coordinates;
+    }
+
+    function transformToCoords(coordinates) {
+        var coords = [], index;
+        for(index = 0; index < coordinates.length; index += 2) {
+            // transform to mercator
+            coords.push([coordinates[index], coordinates[index + 1]]);
+        }
+        return coords;
+    }
+
+    function transformReprojectedToCoords(coordinates) {
+        var coords = [], index, transform = srsConversions["EPSG:3857"];
+        for(index = 0; index < coordinates.length; index += 2) {
+            // transform to mercator
+            coords.push(transform(coordinates[index], coordinates[index + 1]));
+        }
+        return coords;
+    }
+
+    function transformReprojectedToCoordinates(coords) {
+        var coordinates = [], coord, index, transform = srsConversions["EPSG:4326"];
+        for(index = 0; index < coords.length; index++) {
+            coord = transform(coords[index][0], coords[index][1]);
+            coordinates.push(coord[0]);
+            coordinates.push(coord[1]);
+        }
+        return coordinates;
+    }
+
+    function transformToCoordinates(coords) {
+        var coordinates = [], index;
+        for(index = 0; index < coords.length; index++) {
+            coordinates.push(coords[index][0]);
+            coordinates.push(coords[index][1]);
+        }
+        return coordinates;
+    }
+
+    function addTests(tests) {
+        var toolbar = document.getElementById("toolbar"), test, button;
+        toolbar.innerHTML = "";
+        for(test in tests) {
+            button = document.createElement('button');
+            button.innerHTML = test;
+            button.onclick = tests[test];
+            toolbar.appendChild(button);
+        }
+    }
+
+}
+/*
+ function displayRuler() {
+ app.coordinatesDisplayed = !app.coordinatesDisplayed;
+ app.map.displayCoordinates(app.coordinatesDisplayed);
+ }
+ var uniWMS;
+ function toggleGeodetic() {
+ app.geodetic = !app.geodetic;
+ }
+ };
+ */
+</script>
+</body>
 </html>
 
