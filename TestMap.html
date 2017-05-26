@@ -134,8 +134,8 @@ function start(library) {
                         new library.uniRuler(map, [0, 0, 10, 10], '#ff0', 1, 1.0, function() {}, {url: "./img/ruler.png", shiftX: 0, shiftY: 32});
                     },
                     testZoomRectangle: function() {
-                        map.addZoomOnShift(function(neLat, neLng, swLat, swLng){
-                            map.setBounds(neLat, neLng, swLat, swLng);
+                        map.addZoomOnShift(function(swLat, swLng, neLat, neLng){
+                            map.setBounds(swLat, swLng, neLat, neLng);
                         });
                     },
                     testAddMapId: function() {

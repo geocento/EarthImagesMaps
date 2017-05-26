@@ -1,6 +1,6 @@
 <project name="EarthImagesMap" basedir="." default="default">
 
-    <property name="version" value="v0.1" />
+    <property name="version" value="v0.4" />
 	<property name="src.dir" value="js" />
     <property name="artifactsdir" value="production" />
 
@@ -33,7 +33,7 @@
 
         <apply executable="java" force="true">
             <arg line="-jar"></arg>
-            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg path="/home/rmg/Java Libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
             <arg line="-o"></arg>
             <targetfile></targetfile>
             <srcfile></srcfile>
@@ -60,7 +60,7 @@
 
         <apply executable="java" force="true">
             <arg line="-jar"></arg>
-            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg path="/home/rmg/Java Libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
             <arg line="-o"></arg>
             <targetfile></targetfile>
             <srcfile></srcfile>

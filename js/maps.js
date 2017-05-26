@@ -358,9 +358,35 @@ var googleMapsV3 = (function() {
 
                     function complete(event) {
                         // callback first before removing markers and circle
-                        var topLeft = path.getAt(1);
-                        var bottomRight = path.getAt(3);
-                        callback(topLeft.lat(), topLeft.lng(), bottomRight.lat(), bottomRight.lng());
+
+                        var swLat = 90;
+                        var swLng = 180;
+                        var neLat = -90;
+                        var neLng = -180;
+
+                        //iterate over the paths
+                        rectangle.getPaths().forEach(function(path){
+
+                            //iterate over the points in the path
+                            path.getArray().forEach(function(latLng){
+
+                                if(latLng.lat() < swLat)
+                                    swLat = latLng.lat();
+
+                                if(latLng.lat() > neLat)
+                                    neLat = latLng.lat();
+
+                                if(latLng.lng() < swLng)
+                                    swLng = latLng.lng();
+
+                                if(latLng.lng() > neLng)
+                                    neLng = latLng.lng();
+                            });
+
+                        });
+
+                        callback(swLat, swLng, neLat, neLng);
+
                         cleanUp();
                     }
 
