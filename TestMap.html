@@ -124,7 +124,7 @@ function start(library) {
                         control.style.background = 'white';
                         control.style.padding = '5px';
                         control.style.margin = '5px';
-                        map.addControl(control, "topLeft");
+                        map.addControl(control, "rightCenter");
                     },
                     testDisplayCoordinates: function() {
                         displayCoordinates = !displayCoordinates;
@@ -137,6 +137,12 @@ function start(library) {
                         map.addZoomOnShift(function(swLat, swLng, neLat, neLng){
                             map.setBounds(swLat, swLng, neLat, neLng);
                         });
+                    },
+                    showFullscreen: function() {
+                        map.showFullscreen("true");
+                    },
+                    showZoom: function() {
+                        map.showZoom("false");
                     },
                     testAddMapId: function() {
                         map.addMapType("OSM", "OSM", "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", true, 0, 12);
@@ -293,6 +299,65 @@ function start(library) {
                              */
                             this.uniWMS.setVisible(true);
                             this.uniWMS.setOpacity(1.0); //Math.random());
+                        }
+                    },
+                    testWFS: function() {
+
+                        debugger;
+                        if(this.uniWFS) {
+                            this.uniWFS.setVisible(false);
+                            this.uniWFS = null;
+
+                        } else {
+                            this.uniWFS = new library.uniWFSLayer(map, "http://31.171.246.121:8080/geoserver/tiger/ows?",
+                                "1.0.0","tiger:poi", false, null, 50, "id", null, null, null);
+                            this.uniWFS.setVisible(true);
+
+                            //this.uniWFS.setOpacity(1.0); //Math.random());
+                        }
+                    },
+                    testWFS2: function() {
+
+                        debugger;
+                        if(this.uniWFS2) {
+
+                            this.uniWFS2.setVisible(false);
+                            this.uniWFS2 = null;
+
+                        } else {
+
+                            var style = {fillColor: 'green',
+                                strokeWeight: 1};
+                            this.uniWFS2 = new library.uniWFSLayer(map, "http://31.171.246.121:8080/geoserver/tiger/ows?",
+                                "1.0.0","tiger:poly_landmarks", false, JSON.stringify(style), 50, "id", null, null, null);
+                            this.uniWFS2.setVisible(true);
+
+                            styleFunction = function(feature) {
+                                if(feature.getProperty('CFCC')=='D85')
+                                    return {fillColor: 'green',
+                                            strokeWeight: 1}
+                                if(feature.getProperty('CFCC')=='H11')
+                                            return {fillColor: 'blue',
+                                                strokeWeight: 1};
+                                };
+
+                            this.uniWFS2.setStyleFunction(styleFunction);
+                        }
+                    },
+                    testWFS3: function() {
+
+                        debugger;
+                        if(this.uniWFS3) {
+                            this.uniWFS3.setVisible(false);
+                            this.uniWFS3 = null;
+                        } else {
+                            var style = {strokeColor: 'red',
+                                strokeWeight: 2};
+                            this.uniWFS3 = new library.uniWFSLayer(map, "http://31.171.246.121:8080/geoserver/tiger/ows?",
+                                "1.0.0","tiger:tiger_roads", false, JSON.stringify(style), 2000, "id", null, null, null);
+                            this.uniWFS3.setVisible(true);
+
+                            //this.uniWFS.setOpacity(1.0); //Math.random());
                         }
                     },
                     testOpenStreetMaps: function() {

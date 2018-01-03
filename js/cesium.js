@@ -223,6 +223,56 @@ var CesiumMaps = (function() {
         gl.addControl = function(control, position) {
             // TODO - handle positions
             controlDiv.appendChild(control);
+
+            if(position) {
+
+                controlDiv.style.top="";
+                controlDiv.style.right="";
+
+                var verticalCenter = (container.offsetHeight / 2) - (controlDiv.offsetHeight / 2);
+                var horizontalCenter = (container.offsetWidth / 2) - (controlDiv.offsetWidth / 2);
+
+                if(position == 'topLeft') {//should be TOP_LEFT, change it if it not used
+                    controlDiv.style.left = "0px";
+                    controlDiv.style.top = "0px";
+                }
+                if(position == 'leftCenter') {
+                    controlDiv.style.left = "0px";
+                    controlDiv.style.top = verticalCenter + "px";
+                }
+                if(position == 'bottomLeft') { //should be BOTTOM_LEFT, change it if it not used
+                    controlDiv.style.left = "0px";
+                    controlDiv.style.bottom = "25px"; //should be calculated
+                }
+                if(position == 'bottomCenter') {
+                    controlDiv.style.left = horizontalCenter + "px";
+                    controlDiv.style.bottom = "0px";
+                }
+                if(position == 'bottomRight') {
+                    controlDiv.style.right =  "400px"; //should be calculated
+                    controlDiv.style.bottom = "0px";
+                }
+                if(position == 'rightBottom') {
+                    controlDiv.style.right =  "0px";
+                    controlDiv.style.bottom = "25px"; //should be calculated
+                }
+                if(position == 'rightCenter') {
+                    controlDiv.style.right = "0px";
+                    controlDiv.style.top = verticalCenter + "px";
+                }
+                if(position == 'rightTop') {
+                    controlDiv.style.right = "0px";
+                    controlDiv.style.top = "25px";//should be calculated
+                }
+                if(position == 'topRight') {
+                    controlDiv.style.right = "0px";
+                    controlDiv.style.top = "0px";
+                }
+                if(position == 'topCenter') {
+                    controlDiv.style.left = horizontalCenter + "px";
+                    controlDiv.style.top = "0px";
+                }
+            }
         }
 
         gl.displayCoordinates = function(display) {

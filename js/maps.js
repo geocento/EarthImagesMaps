@@ -455,6 +455,16 @@ var googleMapsV3 = (function() {
             this.map.setOptions({"overviewMapControl": overview});
         }
 
+        m.prototype.showFullscreen = function(enable) {
+            var booleanValue = (enable == "true");
+            this.map.setOptions({"fullscreenControl":booleanValue});
+        }
+
+        m.prototype.showZoom = function(enable) {
+            var booleanValue = (enable == "true");
+            this.map.setOptions({"zoomControl":booleanValue});
+        }
+
         m.prototype.setCenter = function(lat, lng) {
             this.map.setCenter(new gm.LatLng(lat, lng));
         }
@@ -475,15 +485,40 @@ var googleMapsV3 = (function() {
         m.prototype.addControl = function(control, position) {
             var mapPosition = gm.ControlPosition.TOP_RIGHT;
             if(position) {
-                if(position == 'topLeft') {
+                if(position == 'topLeft') {//should be TOP_LEFT, change it if it not used
                     mapPosition = gm.ControlPosition.LEFT_TOP;
                 }
-                if(position == 'bottomLeft') {
+                if(position == 'leftCenter') {
+                    mapPosition = gm.ControlPosition.LEFT_CENTER;
+                }
+                if(position == 'bottomLeft') { //should be BOTTOM_LEFT, change it if it not used
                     mapPosition = gm.ControlPosition.LEFT_BOTTOM;
+                }
+                if(position == 'bottomCenter') {
+                    mapPosition = gm.ControlPosition.BOTTOM_CENTER;
+                }
+                if(position == 'bottomRight') {
+                    mapPosition = gm.ControlPosition.BOTTOM_RIGHT;
+                }
+                if(position == 'rightBottom') {
+                    mapPosition = gm.ControlPosition.RIGHT_BOTTOM;
+                }
+                if(position == 'rightCenter') {
+                    mapPosition = gm.ControlPosition.RIGHT_CENTER;
+                }
+                if(position == 'rightTop') {
+                    mapPosition = gm.ControlPosition.RIGHT_TOP;
+                }
+                if(position == 'topRight') {
+                    mapPosition = gm.ControlPosition.TOP_RIGHT;
+                }
+                if(position == 'topCenter') {
+                    mapPosition = gm.ControlPosition.TOP_CENTER;
                 }
             }
             this.map.controls[mapPosition].push(control);
         }
+
 
         m.prototype.setBounds = function(swLat, swLng, neLat, neLng) {
             this.map.fitBounds(new gm.LatLngBounds(new gm.LatLng(swLat, swLng), new gm.LatLng(neLat, neLng)));
@@ -2470,6 +2505,203 @@ var googleMapsV3 = (function() {
             for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i);
             return i == overlayMaps.length ? -1 : i;
         }
+
+        return w;
+    })();
+
+    _.uniWFSLayer = (function() {
+        function w(map2D, baseUrl, version, typeNames, copyright, style,
+                   count, idPropertyName, featureID, propertyName,  sortBy) {
+
+            var _map = map2D.map;
+
+            var version2 = version.indexOf("2.0.0") == 0;
+            if(!count)
+                count=100;
+
+            var lURL = baseUrl;
+            lURL += "SERVICE=WFS";
+            lURL += "&REQUEST=GetFeature";
+            lURL += "&VERSION=" + version;
+            lURL += "&" + (version2 == true ? "typeNames" : "typeName") + "=" + typeNames;
+            lURL += "&outputFormat=application/json";
+            lURL += "&" + (version2 == true ? "count" : "maxFeatures") + "=" + count;
+
+            if(featureID)
+                lURL += "&featureID=" + featureID;
+            if(propertyName)
+                lURL += "&propertyName=" + propertyName;
+            if(sortBy)
+                lURL += "&sortBy=" + sortBy;
+            lURL += "&srsName=EPSG:4326";
+
+            this._bbox = _map.getBounds().getSouthWest().lng() + "," +
+                         _map.getBounds().getSouthWest().lat() + "," +
+                _map.getBounds().getNorthEast().lng() + "," +
+                _map.getBounds().getNorthEast().lat();
+
+            this._url = lURL;
+            this._map = _map;
+            this._features = null;
+            this._idPropertyName = idPropertyName;
+            this._featureID = featureID;
+            this._visible;
+            //google.maps.Data.StyleOptions object specification
+            this._styleOptions = JSON.parse(style);
+            this._styleFunction;
+
+            that = this;
+            gme.addListener(_map, 'idle', function() {
+
+                that._bbox = _map.getBounds().getSouthWest().lng() + "," +
+                    _map.getBounds().getSouthWest().lat() + "," +
+                    _map.getBounds().getNorthEast().lng() + "," +
+                    _map.getBounds().getNorthEast().lat();
+
+                if(that._visible) {
+                    that.update();
+                }
+
+            });
+
+            this.displayCopyright = function(display) {
+                map2D.displayCopyright(copyright, display);
+            }
+        }
+
+        w.prototype.setVisible = function (visible) {
+
+            debugger;
+            this._visible = visible;
+
+            if (visible) {
+                this.update();
+                this.displayCopyright(true);
+
+            } else {
+                // remove if the map was added
+                this.removeAll();
+                this.displayCopyright(false);
+            }
+        }
+
+        w.prototype.removeAll = function() {
+            if (this._features != null) {
+                for (var i=0; i < this._features.length; i++)
+                    this._map.data.remove(this._features[i]);
+            }
+        }
+
+        w.prototype.update = function() {
+            // add if the map was not already added
+            debugger;
+            bbox = "";
+            if (!this._featureID)
+                bbox = "&bbox=" + this._bbox;
+            url = this._url + bbox;
+            that = this;
+            /*this._map.data.loadGeoJson(url, {idPropertyName: this._idPropertyName}, function (features) {
+                that._features = features;
+                that.applyStyle();
+            });*/
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onload = function() {
+                debugger;
+                var response = JSON.parse(xhr.responseText);
+                that.removeAll();
+                that._features = that._map.data.addGeoJson(response, {idPropertyName: that._idPropertyName});
+                //that._features = response.features;
+                that.applyStyle();
+            };
+            xhr.send();
+        }
+
+        w.prototype.setFillOpacity = function(opacity) {
+
+            if(this._styleOptions) {
+                this._styleOptions.fillOpacity = opacity;
+            }
+
+            //this._map.data.revertStyle();
+            this.applyStyle();
+
+        }
+
+        w.prototype.setStrokeOpacity = function(opacity) {
+            if(this._styleOptions) {
+                this._styleOptions.strokeOpacity = opacity;
+            }
+
+            //this._map.data.revertStyle();
+            this.applyStyle();
+        }
+
+        w.prototype.getStrokeOpacity = function() {
+            if(this._styleOptions) {
+                return this._styleOptions.strokeOpacity;
+            } else {
+                return 1.0;
+            }
+        }
+
+        w.prototype.getFillOpacity = function() {
+            if(this._styleOptions) {
+                return this._styleOptions.fillOpacity;
+            } else {
+                return 1.0;
+            }
+        }
+
+        w.prototype.setToBottom = function() {
+            this.setZIndex(0);
+        }
+
+        w.prototype.setOnTop = function() {
+            var overlayMaps = this._map.overlayMapTypes;
+            this.setZIndex(overlayMaps.length);
+        }
+
+        w.prototype.setZIndex = function(zIndex) {
+
+            if(this._styleOptions) {
+                this._styleOptions.zIndex = zIndex;
+            }
+
+            //this._map.data.revertStyle();
+            this.applyStyle();
+
+        }
+
+        w.prototype.getZIndex = function() {
+
+            if(this._styleOptions) {
+                this._styleOptions.zIndex = zIndex;
+            }
+
+            return this._styleOptions.zIndex;
+        }
+
+        w.prototype.setStyleFunction = function(styleFunction){
+
+            debugger;
+            this._styleFunction = styleFunction;
+            this._map.data.setStyle( this._styleFunction);
+            this._styleOptions = null;
+        }
+
+        w.prototype.applyStyle = function(){
+
+            debugger;
+            if(this._features && this._styleOptions)
+            {
+                for (var i=0; i < this._features.length; i++)
+                    this._map.data.overrideStyle(this._features [i], this._styleOptions);
+            }
+
+        }
+
 
         return w;
     })();
