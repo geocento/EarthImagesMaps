@@ -456,13 +456,13 @@ var googleMapsV3 = (function() {
         }
 
         m.prototype.showFullscreen = function(enable) {
-            var booleanValue = (enable == "true");
-            this.map.setOptions({"fullscreenControl":booleanValue});
+            var booleanValue2 = (enable == "true");
+            this.map.setOptions({"fullscreenControl":booleanValue2});
         }
 
         m.prototype.showZoom = function(enable) {
-            var booleanValue = (enable == "true");
-            this.map.setOptions({"zoomControl":booleanValue});
+            var booleanValue2 = (enable == "true");
+            this.map.setOptions({"zoomControl":booleanValue2});
         }
 
         m.prototype.setCenter = function(lat, lng) {
