@@ -36,10 +36,10 @@ var CesiumMaps = (function() {
         container.style.position = 'relative';
         container.style.width = '100%';
         container.style.height = '100%';
-        var frameDiv = document.createElement('div');
-        frameDiv.style.width = "100%";
-        frameDiv.style.height = "100%";
-        container.appendChild(frameDiv);
+        var frameDivMap = document.createElement('div');
+        frameDivMap.style.width = "100%";
+        frameDivMap.style.height = "100%";
+        container.appendChild(frameDivMap);
         var controlDiv = document.createElement('div');
         controlDiv.style.position = "absolute";
         controlDiv.style.right = "0px";
@@ -65,7 +65,7 @@ var CesiumMaps = (function() {
             })
         };
 
-        var cesiumWidget = new Cesium.CesiumWidget(frameDiv, {
+        var cesiumWidget = new Cesium.CesiumWidget(frameDivMap, {
             imageryProvider: mapsIds[mapId ? mapId : "Bing Satellite Maps"],
             scene3DOnly: true
         });
@@ -221,16 +221,19 @@ var CesiumMaps = (function() {
         }
 
         gl.addControl = function(control, position) {
-            // TODO - handle positions
+
             controlDiv.appendChild(control);
 
-            if(position) {
+            var positionAlreadySet = control.style.top!="" || control.style.right!="" ||
+                control.style.left!="" || control.style.bottom!="";
+
+            if(position && !positionAlreadySet) {
 
                 controlDiv.style.top="";
                 controlDiv.style.right="";
 
-                var verticalCenter = (container.offsetHeight / 2) - (controlDiv.offsetHeight / 2);
-                var horizontalCenter = (container.offsetWidth / 2) - (controlDiv.offsetWidth / 2);
+                var verticalCenter = (frameDivMap.offsetHeight / 2) - (controlDiv.offsetHeight / 2);
+                var horizontalCenter = (frameDivMap.offsetWidth / 2) - (controlDiv.offsetWidth / 2);
 
                 if(position == 'topLeft') {//should be TOP_LEFT, change it if it not used
                     controlDiv.style.left = "0px";
@@ -257,6 +260,7 @@ var CesiumMaps = (function() {
                     controlDiv.style.bottom = "25px"; //should be calculated
                 }
                 if(position == 'rightCenter') {
+
                     controlDiv.style.right = "0px";
                     controlDiv.style.top = verticalCenter + "px";
                 }
@@ -279,7 +283,7 @@ var CesiumMaps = (function() {
 
             if(this.coordinatesOverlay == undefined) {
                 var _self = this;
-                var latLngOverlay = function(frameDiv) {
+                var latLngOverlay = function(frameDivMap) {
                     var div = document.createElement('DIV');
                     div.innerHTML = "";
                     div.style.position = 'absolute';
@@ -290,7 +294,7 @@ var CesiumMaps = (function() {
                     div.style.margin = "10px";
                     this.div_ = div;
                     // add to frame div and display coordinates
-                    frameDiv.appendChild(div);
+                    frameDivMap.appendChild(div);
                     var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
                     handler.setInputAction(
                         function (movement) {
