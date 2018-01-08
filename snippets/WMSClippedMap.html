@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyB50v28QAm3etbTO_513E4AIPeaei2E0SM&libraries=geometry&language=en-GB"
+            async defer></script>
+
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script type="text/javascript">
+        function initMap() {
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: -34.397, lng: 150.644},
+                zoom: 8
+            });
+
+            var gm = google.maps;
+            var listener = gm.event.addListener(map, 'bounds_changed', function() {
+                gm.event.removeListener(listener);
+                var uniWMSLayerClipped = function (_map, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng, isBaseLayer) {
+                    srs = srs || "EPSG:4326";
+                    if (!srsConversions[srs]) {
+                        srs = "EPSG:4326";
+                    }
+                    var bounds = new gm.LatLngBounds(new gm.LatLng(swLat ? swLat : -90.0, swLng ? swLng : -179.99999),
+                        new gm.LatLng(neLat ? neLat : 90.0, neLng ? neLng : 179.99999));
+
+                    var version3 = version.indexOf("1.3") == 0;
+
+                    var tileSize = 512;
+                    var lURL = baseUrl;
+                    lURL += "REQUEST=GetMap";
+                    lURL += "&SERVICE=WMS";
+                    lURL += "&VERSION=" + version;
+                    lURL += "&LAYERS=" + layers;
+                    lURL += "&width=" + tileSize;
+                    lURL += "&height=" + tileSize;
+                    lURL += "&" + (version3 == true ? "crs" : "srs") + "=" + srs;
+                    lURL += "&TRANSPARENT=TRUE";
+                    if (styles) {
+                        lURL += "&styles=" + styles;
+                    }
+                    lURL += "&format=image/png";
+                    var srsConversion = srsConversions[srs];
+                    // for the projections that require axis inversion under version 3
+                    var invertAxisOrder = version3 == true && srs == "EPSG:4326";
+
+                    function boundsIncluded(firstBound, secondBound) {
+                        return firstBound.contains(secondBound.getSouthWest()) && firstBound.contains(secondBound.getNorthEast());
+                    }
+
+                    function WMSLayerClipped(tileSize) {
+                        this.tileSize = tileSize;
+                        this.tiles = [];
+                        // initialise clip bounds
+                        this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
+                            new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
+                                (bounds.getNorthEast().lng() - bounds.getSouthWest().lng())));
+                        var position = this.getMarkerPosition(this.clipBounds.getNorthEast().lng());
+                        this.marker = new gm.Marker({
+                            map: map,
+                            position: position,
+                            icon: new gm.MarkerImage("../img/dragIcon.png",
+                                undefined,
+                                new gm.Point(0, 0),
+                                new gm.Point(5, 5)),
+                            flat: true
+                        });
+                        this.marker.setDraggable(true);
+                        var _self = this;
+                        google.maps.event.addListener(this.marker, "drag", function (e) {
+                            _self.markerUpdated(e);
+                        });
+                        this.marker.setTitle("Drag to move bounds for overlay");
+                        this.mapListener = [];
+                        this.mapListener.push(google.maps.event.addListener(_map, 'bounds_changed', function (e) {
+                            _self.updateMarker();
+                        }));
+                    }
+
+                    WMSLayerClipped.prototype.markerUpdated = function (e) {
+                        var clipBounds = this.clipBounds;
+                        var latLng = e.latLng;
+                        // make sure the marker stays within the boundaries of the layer
+                        var lng = Math.max(Math.min(latLng.lng(), bounds.getNorthEast().lng()), bounds.getSouthWest().lng());
+                        var swCorner = new gm.LatLng(clipBounds.getSouthWest().lat(), clipBounds.getSouthWest().lng());
+                        var neCorner = new gm.LatLng(clipBounds.getNorthEast().lat(), lng);
+                        this.clipBounds = new gm.LatLngBounds(
+                            swCorner,
+                            neCorner);
+                        this.updateTiles();
+                        // force marker position
+                        this.updateMarker();
+                    }
+
+                    WMSLayerClipped.prototype.getMarkerPosition = function (lng) {
+                        var clipBounds = this.clipBounds;
+                        var mapBounds = _map.getBounds();
+                        // position the marker to be in the midle of the layer bounds as well as the map bounds which ever is smaller
+                        var lat;
+                        if (!mapBounds.intersects(clipBounds) || boundsIncluded(mapBounds, clipBounds)) {
+                            lat = clipBounds.getSouthWest().lat() +
+                                (clipBounds.getNorthEast().lat() - clipBounds.getSouthWest().lat()) / 2;
+                        } else {
+                            if (mapBounds.getNorthEast().lat() < clipBounds.getNorthEast().lat() &&
+                                mapBounds.getSouthWest().lat() > clipBounds.getSouthWest().lat()) {
+                                lat = mapBounds.getSouthWest().lat() +
+                                    (mapBounds.getNorthEast().lat() - mapBounds.getSouthWest().lat()) / 2;
+                            } else if (mapBounds.getNorthEast().lat() < clipBounds.getNorthEast().lat()) {
+                                lat = clipBounds.getSouthWest().lat() +
+                                    (mapBounds.getNorthEast().lat() - clipBounds.getSouthWest().lat()) / 2;
+                            } else {
+                                lat = mapBounds.getSouthWest().lat() +
+                                    (clipBounds.getNorthEast().lat() - mapBounds.getSouthWest().lat()) / 2;
+                            }
+                        }
+                        return new gm.LatLng(lat, lng);
+                    }
+
+                    WMSLayerClipped.prototype.updateMarker = function () {
+                        this.marker.setPosition(this.getMarkerPosition(this.clipBounds.getNorthEast().lng()));
+                    }
+
+                    WMSLayerClipped.prototype.maxZoom = 19;
+                    WMSLayerClipped.prototype.name = 'Tile #s';
+                    WMSLayerClipped.prototype.alt = 'Tile Coordinate Map Type';
+
+                    WMSLayerClipped.prototype.getTile = function (coord, zoom, ownerDocument) {
+                        var proj = _map.getProjection();
+                        var zfactor = Math.pow(2, zoom);
+                        var tileRange = 1 << (zoom - 1);
+                        // get tile coordinates
+                        // make sure coord.x is in the right range
+                        var first = coord.x;
+                        if (first < 0 || first >= tileRange) {
+                            first = (first % tileRange + tileRange) % tileRange;
+                        }
+                        var swCoord = proj.fromPointToLatLng(new gm.Point(first * tileSize / zfactor, (coord.y + 1) * tileSize / zfactor));
+                        var neCoord = proj.fromPointToLatLng(new gm.Point((first + 1) * tileSize / zfactor, coord.y * tileSize / zfactor));
+                        var tileLatLng = new gm.LatLngBounds(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())),
+                            new gm.LatLng(Math.max(swCoord.lat(), neCoord.lat()), Math.max(swCoord.lng(), neCoord.lng())));
+                        var div = ownerDocument.createElement('div');
+                        div.style.background = 'none';
+                        div.style.backgroundSize = 'cover';
+                        var _self = this;
+                        div.updateClip = function () {
+                            // set no right border by default
+                            div.style.borderRight = 'none';
+                            var clipBounds = _self.clipBounds;
+                            var width = tileSize, height = tileSize;
+                            // check the tile is within the bounds
+                            if (!tileLatLng.intersects(clipBounds)) {
+                                url = "http://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
+                            } else {
+                                // convert from wgs84 lat,lng to new srs coordinates
+                                var swConverted = srsConversion(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())));
+                                var neConverted = srsConversion(new gm.LatLng(Math.max(swCoord.lat(), neCoord.lat()), Math.max(swCoord.lng(), neCoord.lng())));
+                                //create the Bounding box string
+                                // handles 1.3.0 wms by ordering lat, lng instead of lng, lat
+                                // Bounding box for map extent. Value is minx,miny,maxx,maxy in units of the SRS.
+                                var bbox;
+                                if (invertAxisOrder) {
+                                    bbox = swConverted.lat + "," + swConverted.lng + "," + neConverted.lat + "," + neConverted.lng;
+                                } else {
+                                    bbox = swConverted.lng + "," + swConverted.lat + "," + neConverted.lng + "," + neConverted.lat;
+                                }
+                                //base WMS URL
+                                url = lURL + "&BBOX=" + bbox; // set bounding box
+                                // update width and height if necessary
+                                var edge = tileLatLng.getSouthWest().lng() < clipBounds.getNorthEast().lng() &&
+                                    tileLatLng.getNorthEast().lng() > clipBounds.getNorthEast().lng();
+                                if (edge) {
+                                    width = tileSize *
+                                        (clipBounds.getNorthEast().lng() - tileLatLng.getSouthWest().lng()) /
+                                        (tileLatLng.getNorthEast().lng() - tileLatLng.getSouthWest().lng());
+                                    div.style.borderRight = 'solid 1px #AAAAAA';
+                                }
+                            }
+                            div.style.backgroundImage = "url('" + url + "')";
+                            div.style.width = width + 'px';
+                            div.style.height = height + 'px';
+                        }
+                        div.updateClip();
+                        this.tiles.push(div);
+                        return div;
+                    };
+
+                    WMSLayerClipped.prototype.releaseTile = function (node) {
+                        var index = this.tiles.indexOf(node);
+                        if (index > -1) {
+                            this.tiles.splice(index, 1);
+                        }
+                    }
+
+                    WMSLayerClipped.prototype.setClip = function (width) {
+                        width = Math.min(Math.max(width, 0.0), 1.0);
+                        // calculate new bounds
+                        this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
+                            new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
+                                (bounds.getNorthEast().lng() - bounds.getSouthWest().lng()) * width));
+                        this.updateTiles();
+                        this.updateMarker();
+                    }
+
+                    WMSLayerClipped.prototype.updateTiles = function () {
+                        // update tiles width
+                        var index;
+                        for (index = 0; index < this.tiles.length; index++) {
+                            this.tiles[index].updateClip();
+                        }
+                    }
+
+                    this._map = _map;
+                    this._layer = new WMSLayerClipped(new gm.Size(tileSize, tileSize));
+                }
+
+                uniWMSLayerClipped.prototype.setClippedWidth = function (widthPercent) {
+                    this._layer.setClip(widthPercent / 100.0);
+                }
+
+                uniWMSLayerClipped.prototype.setVisible = function (visible) {
+                    var overlayMaps = this._map.overlayMapTypes;
+                    // find the layer
+                    for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i) ;
+                    if (visible) {
+                        // add if the map was not already added
+                        if (i == overlayMaps.length) {
+                            overlayMaps.push(this._layer);
+                        }
+                    } else {
+                        // remove if the map was added
+                        if (i < overlayMaps.length) {
+                            overlayMaps.removeAt(i);
+                        }
+                    }
+                }
+
+                uniWMSLayerClipped.prototype.remove = function () {
+                    this.setVisible(false);
+                }
+
+                uniWMSLayerClipped.prototype.setOpacity = function (opacity) {
+                    if (this._layer) {
+                        this._layer.setOpacity(opacity);
+                    }
+                }
+
+                uniWMSLayerClipped.prototype.getOpacity = function () {
+                    if (this._layer) {
+                        return this._layer.getOpacity();
+                    } else {
+                        return 1.0;
+                    }
+                }
+
+                uniWMSLayerClipped.prototype.setToBottom = function () {
+                    this.setZIndex(0);
+                }
+
+                uniWMSLayerClipped.prototype.setOnTop = function () {
+                    this.setZIndex(overlayMaps.length);
+                }
+
+                uniWMSLayerClipped.prototype.setZIndex = function (zIndex) {
+                    var i = this.getZIndex();
+                    if (i == -1) {
+                        return;
+                    }
+                    var overlayMaps = this._map.overlayMapTypes;
+                    overlayMaps.removeAt(i);
+                    overlayMaps.insertAt(zIndex, this._layer);
+                }
+
+                uniWMSLayerClipped.prototype.getZIndex = function () {
+                    var overlayMaps = this._map.overlayMapTypes;
+                    for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i) ;
+                    return i == overlayMaps.length ? -1 : i;
+                }
+
+                var srsConversions = {
+                    "EPSG:4326": function (latLng) {
+                        return {lat: latLng.lat(), lng: latLng.lng()}
+                    },
+                    "EPSG:3857": function (latLng) {
+                        if ((Math.abs(latLng.lng()) > 180 || Math.abs(latLng.lat()) > 90))
+                            return;
+
+                        var num = latLng.lng() * 0.017453292519943295;
+                        var x = 6378137.0 * num;
+                        var a = latLng.lat() * 0.017453292519943295;
+
+                        return {lng: x, lat: 3189068.5 * Math.log((1.0 + Math.sin(a)) / (1.0 - Math.sin(a)))};
+                    }
+                }
+                // copy similar transforms
+                srsConversions["CRS:84"] = srsConversions["EPSG:4326"];
+                srsConversions["EPSG:102100"] = srsConversions["EPSG:3857"];
+                srsConversions["EPSG:900913"] = srsConversions["EPSG:3857"];
+
+                var uniWMS = new uniWMSLayerClipped(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
+                    null, "EPSG:3857", 45.0, -20.0, 60.0, 10.0);
+                uniWMS.setVisible(true);
+                map.fitBounds(new gm.LatLngBounds(new gm.LatLng(45.0, -20.0), new gm.LatLng(60.0, 10.0)));
+            });
+
+        }
+
+    </script>
+  </body>
+</html>
+

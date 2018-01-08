@@ -166,6 +166,10 @@ var googleMapsV3 = (function() {
         function m(div, lat, lng, zoom, mapId, callback, failure) {
             var latlng = new gm.LatLng(lat, lng);
             this.mapTypeIds = [gm.MapTypeId.ROADMAP, gm.MapTypeId.HYBRID, gm.MapTypeId.SATELLITE, gm.MapTypeId.TERRAIN];
+            // check map id
+            if(!mapId || this.mapTypeIds.indexOf(mapId) == -1) {
+                mapId = gm.MapTypeId.ROADMAP;
+            }
             var myOptions = {
                 zoom: zoom,
                 minZoom: 1,
@@ -186,7 +190,7 @@ var googleMapsV3 = (function() {
                     position: gm.ControlPosition.BOTTOM_LEFT
                 },
                 rotateControl: true,
-                mapTypeId: mapId ? mapId : gm.MapTypeId.HYBRID
+                mapTypeId: mapId
             };
             var map = new gm.Map(div, myOptions);
             map.setTilt(0);
@@ -442,8 +446,17 @@ var googleMapsV3 = (function() {
             return this.map.getZoom();
         }
 
-        m.prototype.addControl = function(control) {
-            this.map.controls[gm.ControlPosition.TOP_RIGHT].push(control);
+        m.prototype.addControl = function(control, position) {
+            var mapPosition = gm.ControlPosition.TOP_RIGHT;
+            if(position) {
+                if(position == 'topLeft') {
+                    mapPosition = gm.ControlPosition.LEFT_TOP;
+                }
+                if(position == 'bottomLeft') {
+                    mapPosition = gm.ControlPosition.LEFT_BOTTOM;
+                }
+            }
+            this.map.controls[mapPosition].push(control);
         }
 
         m.prototype.setBounds = function(swLat, swLng, neLat, neLng) {
@@ -575,7 +588,7 @@ var googleMapsV3 = (function() {
                     var mapDiv = map.getDiv();
                     gme.addDomListener(mapDiv, "mousemove", function(event) {
                         var latLng = map.convertScreenPositionToLatLng(event.clientX, event.clientY);
-                        div.innerHTML = "Position: lng " + latLng.lng().toFixed(4) + " deg, lat " + latLng.lat().toFixed(4) + " deg";
+                        div.innerHTML = "Position: long " + latLng.lng().toFixed(4) + " deg, lat " + latLng.lat().toFixed(4) + " deg";
                     });
                     this.div_ = div;
                 }
@@ -1610,9 +1623,10 @@ var googleMapsV3 = (function() {
 
             function complete(event) {
                 // callback first before removing markers and circle
-                var topLeft = topLeftMarker.getPosition();
-                var bottomRight = bottomRightMarker.getPosition();
-                callback(topLeft.lat(), topLeft.lng(), bottomRight.lat(), bottomRight.lng());
+                var bounds = new google.maps.LatLngBounds();
+                bounds.extend(topLeftMarker.getPosition());
+                bounds.extend(bottomRightMarker.getPosition());
+                callback(bounds.getNorthEast().lat(), bounds.getSouthWest().lng(), bounds.getSouthWest().lat(), bounds.getNorthEast().lng());
                 cleanUp();
             }
 
@@ -1781,7 +1795,13 @@ var googleMapsV3 = (function() {
             var _self = this;
 
             function markerDragged() {
+                var bounds = new google.maps.LatLngBounds();
+                bounds.extend(topLeftMarker.getPosition());
+                bounds.extend(bottomRightMarker.getPosition());
+                _self.callback(bounds.getNorthEast().lat(), bounds.getSouthWest().lng(), bounds.getSouthWest().lat(), bounds.getNorthEast().lng());
+/*
                 _self.callback(topLeftMarker.getPosition().lat(), topLeftMarker.getPosition().lng(), bottomRightMarker.getPosition().lat(), bottomRightMarker.getPosition().lng());
+*/
                 map2D.theTooltip.hide();
             }
 
@@ -2362,6 +2382,266 @@ var googleMapsV3 = (function() {
             if(!isBaseLayer) {
                 map2D.overlaysArray.push(this);
             }
+        }
+
+        w.prototype.setVisible = function (visible) {
+            var overlayMaps = this._map.overlayMapTypes;
+            // find the layer
+            for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i);
+            if(visible) {
+                // add if the map was not already added
+                if(i == overlayMaps.length) {
+                    overlayMaps.push(this._layer);
+                    this._layer.displayCopyright(true);
+                }
+            } else {
+                // remove if the map was added
+                if(i < overlayMaps.length) {
+                    overlayMaps.removeAt(i);
+                }
+                this._layer.displayCopyright(false);
+            }
+        }
+
+        w.prototype.remove = function() {
+            this.setVisible(false);
+        }
+
+        w.prototype.setOpacity = function(opacity) {
+            if(this._layer) {
+                this._layer.setOpacity(opacity);
+            }
+        }
+
+        w.prototype.getOpacity = function() {
+            if(this._layer) {
+                return this._layer.getOpacity();
+            } else {
+                return 1.0;
+            }
+        }
+
+        w.prototype.setToBottom = function() {
+            this.setZIndex(0);
+        }
+
+        w.prototype.setOnTop = function() {
+            this.setZIndex(overlayMaps.length);
+        }
+
+        w.prototype.setZIndex = function(zIndex) {
+            var i = this.getZIndex();
+            if(i == -1) {
+                return;
+            }
+            var overlayMaps = this._map.overlayMapTypes;
+            overlayMaps.removeAt(i);
+            overlayMaps.insertAt(zIndex, this._layer);
+        }
+
+        w.prototype.getZIndex = function() {
+            var overlayMaps = this._map.overlayMapTypes;
+            for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i);
+            return i == overlayMaps.length ? -1 : i;
+        }
+
+        return w;
+    })();
+
+    _.uniWMSLayerClipped = (function() {
+        function w(map2D, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng, isBaseLayer) {
+            var _map = map2D.map;
+            srs = srs || "EPSG:4326";
+            if(!srsConversions[srs]) {
+                srs = "EPSG:4326";
+            }
+            var bounds = new gm.LatLngBounds(new gm.LatLng(swLat ? swLat : -90.0, swLng ? swLng : -179.99999),
+                new gm.LatLng(neLat ? neLat : 90.0, neLng ? neLng : 179.99999));
+
+            var version3 = version.indexOf("1.3") == 0;
+
+            var tileSize = 512;
+            var lURL = baseUrl;
+            lURL += "REQUEST=GetMap";
+            lURL += "&SERVICE=WMS";
+            lURL += "&VERSION=" + version;
+            lURL += "&LAYERS=" + layers;
+            lURL += "&width=" + tileSize;
+            lURL += "&height=" + tileSize;
+            lURL += "&" + (version3 == true ? "crs" : "srs") + "=" + srs;
+            lURL += "&TRANSPARENT=TRUE";
+            if(styles) {
+                lURL += "&styles=" + styles;
+            }
+            lURL += "&format=image/png";
+            var srsConversion = srsConversions[srs];
+            // for the projections that require axis inversion under version 3
+            var invertAxisOrder = version3 == true && srs == "EPSG:4326";
+
+            function boundsIncluded(firstBound, secondBound) {
+                return firstBound.contains(secondBound.getSouthWest()) && firstBound.contains(secondBound.getNorthEast());
+            }
+
+            function WMSLayerClipped(tileSize) {
+                this.tileSize = tileSize;
+                this.tiles = [];
+                // initialise clip bounds
+                this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
+                    new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
+                        (bounds.getNorthEast().lng() - bounds.getSouthWest().lng())));
+                this.marker = _.createMarker(map2D.map, this.getMarkerPosition(this.clipBounds.getNorthEast().lng()), _.defaultDragMarker);
+                this.marker.setDraggable(true);
+                var _self = this;
+                google.maps.event.addListener(this.marker, "drag", function(e) {_self.markerUpdated(e);});
+                this.marker.setTitle("Drag to move bounds for overlay");
+                this.mapListener = [];
+                this.mapListener.push(google.maps.event.addListener(_map, 'bounds_changed', function(e) {_self.updateMarker();}));
+            }
+
+            WMSLayerClipped.prototype.markerUpdated = function(e) {
+                var clipBounds = this.clipBounds;
+                var latLng = e.latLng;
+                // make sure the marker stays within the boundaries of the layer
+                var lng = Math.max(Math.min(latLng.lng(), bounds.getNorthEast().lng()), bounds.getSouthWest().lng());
+                var swCorner = new gm.LatLng(clipBounds.getSouthWest().lat(), clipBounds.getSouthWest().lng());
+                var neCorner = new gm.LatLng(clipBounds.getNorthEast().lat(), lng);
+                this.clipBounds = new gm.LatLngBounds(
+                    swCorner,
+                    neCorner);
+                this.updateTiles();
+                // force marker position
+                this.updateMarker();
+            }
+
+            WMSLayerClipped.prototype.getMarkerPosition = function(lng) {
+                var clipBounds = this.clipBounds;
+                var mapBounds = _map.getBounds();
+                // position the marker to be in the midle of the layer bounds as well as the map bounds which ever is smaller
+                var lat;
+                if(!mapBounds.intersects(clipBounds) || boundsIncluded(mapBounds, clipBounds)) {
+                    lat = clipBounds.getSouthWest().lat() +
+                        (clipBounds.getNorthEast().lat() - clipBounds.getSouthWest().lat()) / 2;
+                } else {
+                    if(mapBounds.getNorthEast().lat() < clipBounds.getNorthEast().lat() &&
+                        mapBounds.getSouthWest().lat() > clipBounds.getSouthWest().lat()) {
+                        lat = mapBounds.getSouthWest().lat() +
+                            (mapBounds.getNorthEast().lat() - mapBounds.getSouthWest().lat()) / 2;
+                    } else if(mapBounds.getNorthEast().lat() < clipBounds.getNorthEast().lat()) {
+                        lat = clipBounds.getSouthWest().lat() +
+                            (mapBounds.getNorthEast().lat() - clipBounds.getSouthWest().lat()) / 2;
+                    } else {
+                        lat = mapBounds.getSouthWest().lat() +
+                            (clipBounds.getNorthEast().lat() - mapBounds.getSouthWest().lat()) / 2;
+                    }
+                }
+                return new gm.LatLng(lat, lng);
+            }
+
+            WMSLayerClipped.prototype.updateMarker = function() {
+                this.marker.setPosition(this.getMarkerPosition(this.clipBounds.getNorthEast().lng()));
+            }
+
+            WMSLayerClipped.prototype.maxZoom = 19;
+            WMSLayerClipped.prototype.name = 'Tile #s';
+            WMSLayerClipped.prototype.alt = 'Tile Coordinate Map Type';
+
+            WMSLayerClipped.prototype.getTile = function(coord, zoom, ownerDocument) {
+                var proj = _map.getProjection();
+                var zfactor = Math.pow(2, zoom);
+                var tileRange = 1 << (zoom - 1);
+                // get tile coordinates
+                // make sure coord.x is in the right range
+                var first = coord.x;
+                if (first < 0 || first >= tileRange) {
+                    first = (first % tileRange + tileRange) % tileRange;
+                }
+                var swCoord = proj.fromPointToLatLng(new gm.Point(first * tileSize / zfactor, (coord.y + 1) * tileSize / zfactor));
+                var neCoord = proj.fromPointToLatLng(new gm.Point((first + 1) * tileSize / zfactor, coord.y * tileSize / zfactor));
+                var tileLatLng = new gm.LatLngBounds(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())),
+                    new gm.LatLng(Math.max(swCoord.lat(), neCoord.lat()), Math.max(swCoord.lng(), neCoord.lng())));
+                var div = ownerDocument.createElement('div');
+                div.style.background = 'none';
+                div.style.backgroundSize = 'cover';
+                var _self = this;
+                div.updateClip = function() {
+                    // set no right border by default
+                    div.style.borderRight = 'none';
+                    var clipBounds = _self.clipBounds;
+                    var width = tileSize, height = tileSize;
+                    // check the tile is within the bounds
+                    if(!tileLatLng.intersects(clipBounds)) {
+                        url = "http://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
+                    } else {
+                        // convert from wgs84 lat,lng to new srs coordinates
+                        var swConverted = srsConversion(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())));
+                        var neConverted = srsConversion(new gm.LatLng(Math.max(swCoord.lat(), neCoord.lat()), Math.max(swCoord.lng(), neCoord.lng())));
+                        //create the Bounding box string
+                        // handles 1.3.0 wms by ordering lat, lng instead of lng, lat
+                        // Bounding box for map extent. Value is minx,miny,maxx,maxy in units of the SRS.
+                        var bbox;
+                        if(invertAxisOrder) {
+                            bbox = swConverted.lat + "," + swConverted.lng + "," + neConverted.lat + "," + neConverted.lng;
+                        } else {
+                            bbox = swConverted.lng + "," + swConverted.lat + "," + neConverted.lng + "," + neConverted.lat;
+                        }
+                        //base WMS URL
+                        url = lURL + "&BBOX=" + bbox; // set bounding box
+                        // update width and height if necessary
+                        var edge = tileLatLng.getSouthWest().lng() < clipBounds.getNorthEast().lng() &&
+                            tileLatLng.getNorthEast().lng() > clipBounds.getNorthEast().lng();
+                        if(edge) {
+                            width = tileSize *
+                                (clipBounds.getNorthEast().lng() - tileLatLng.getSouthWest().lng()) /
+                                (tileLatLng.getNorthEast().lng() - tileLatLng.getSouthWest().lng());
+                            div.style.borderRight = 'solid 1px #AAAAAA';
+                        }
+                    }
+                    div.style.backgroundImage = "url('" + url + "')";
+                    div.style.width = width + 'px';
+                    div.style.height = height + 'px';
+                }
+                div.updateClip();
+                this.tiles.push(div);
+                return div;
+            };
+
+            WMSLayerClipped.prototype.releaseTile = function(node) {
+                var index = this.tiles.indexOf(node);
+                if(index > -1) {
+                    this.tiles.splice(index, 1);
+                }
+            }
+
+            WMSLayerClipped.prototype.setClip = function(width) {
+                width = Math.min(Math.max(width, 0.0), 1.0);
+                // calculate new bounds
+                this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
+                    new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
+                        (bounds.getNorthEast().lng() - bounds.getSouthWest().lng()) * width));
+                this.updateTiles();
+                this.updateMarker();
+            }
+
+            WMSLayerClipped.prototype.updateTiles = function() {
+                // update tiles width
+                var index;
+                for(index = 0; index < this.tiles.length; index++) {
+                    this.tiles[index].updateClip();
+                }
+            }
+
+            this._map = _map;
+            this._layer = new WMSLayerClipped(new gm.Size(tileSize, tileSize));
+            this._layer.displayCopyright = function(display) {
+                map2D.displayCopyright(copyright, display);
+            }
+            if(!isBaseLayer) {
+                map2D.overlaysArray.push(this);
+            }
+        }
+
+        w.prototype.setClippedWidth = function (widthPercent) {
+            this._layer.setClip(widthPercent / 100.0);
         }
 
         w.prototype.setVisible = function (visible) {

@@ -290,8 +290,10 @@ var DrawHelper = (function() {
                             renderState : {
                                 depthTest : {
                                     enabled : true
-                                },
+                                }
+/*
                                 lineWidth : Math.min(this.strokeWidth || 4.0, context._aliasedLineWidthRange[1])
+*/
                             }
                         })
                     });
