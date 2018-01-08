@@ -1409,6 +1409,10 @@ var DrawHelper = (function() {
                 return;
             }
 
+/*
+            this.dragBillboard = options && options.dragBillboard ? options.dragBillboard : dragBillboard;
+
+*/
             var polyline = this;
             polyline.isPolygon = false;
             polyline.asynchronous = false;
