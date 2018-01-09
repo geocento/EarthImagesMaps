@@ -2363,6 +2363,7 @@ var googleMapsV3 = (function() {
     srsConversions["EPSG:102100"] = srsConversions["EPSG:3857"];
     srsConversions["EPSG:900913"] = srsConversions["EPSG:3857"];
 
+/*
     _.uniWMSLayer = (function() {
         function w(map2D, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng, isBaseLayer) {
             var _map = map2D.map;
@@ -2508,8 +2509,9 @@ var googleMapsV3 = (function() {
 
         return w;
     })();
+*/
 
-    _.uniWMSLayerClipped = (function() {
+    _.uniWMSLayer = (function() {
         function w(map2D, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng, isBaseLayer) {
             var _map = map2D.map;
             srs = srs || "EPSG:4326";
@@ -2546,17 +2548,31 @@ var googleMapsV3 = (function() {
             function WMSLayerClipped(tileSize) {
                 this.tileSize = tileSize;
                 this.tiles = [];
-                // initialise clip bounds
-                this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
-                    new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
-                        (bounds.getNorthEast().lng() - bounds.getSouthWest().lng())));
-                this.marker = _.createMarker(map2D.map, this.getMarkerPosition(this.clipBounds.getNorthEast().lng()), _.defaultDragMarker);
-                this.marker.setDraggable(true);
-                var _self = this;
-                google.maps.event.addListener(this.marker, "drag", function(e) {_self.markerUpdated(e);});
-                this.marker.setTitle("Drag to move bounds for overlay");
+                this.opacity = 1.0;
                 this.mapListener = [];
+                var _self = this;
                 this.mapListener.push(google.maps.event.addListener(_map, 'bounds_changed', function(e) {_self.updateMarker();}));
+            }
+
+            WMSLayerClipped.prototype.activateClipping = function(activate) {
+                if(activate) {
+                    // initialise clip bounds
+                    this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
+                        new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
+                            (bounds.getNorthEast().lng() - bounds.getSouthWest().lng())));
+                    this.marker = _.createMarker(map2D.map, this.getMarkerPosition(this.clipBounds.getNorthEast().lng()), _.defaultDragMarker);
+                    this.marker.setDraggable(true);
+                    var _self = this;
+                    google.maps.event.addListener(this.marker, "drag", function(e) {_self.markerUpdated(e);});
+                    this.marker.setTitle("Drag to move bounds for overlay");
+                } else {
+                    if(this.marker) {
+                        this.marker.setMap(null);
+                        this.marker = null;
+                    }
+                    this.clipBounds = null;
+                }
+                this.updateTiles();
             }
 
             WMSLayerClipped.prototype.markerUpdated = function(e) {
@@ -2599,7 +2615,9 @@ var googleMapsV3 = (function() {
             }
 
             WMSLayerClipped.prototype.updateMarker = function() {
-                this.marker.setPosition(this.getMarkerPosition(this.clipBounds.getNorthEast().lng()));
+                if(this.marker) {
+                    this.marker.setPosition(this.getMarkerPosition(this.clipBounds.getNorthEast().lng()));
+                }
             }
 
             WMSLayerClipped.prototype.maxZoom = 19;
@@ -2628,6 +2646,10 @@ var googleMapsV3 = (function() {
                     // set no right border by default
                     div.style.borderRight = 'none';
                     var clipBounds = _self.clipBounds;
+                    if(!clipBounds) {
+                        clipBounds = bounds;
+                    }
+                    var isClipping = clipBounds != bounds;
                     var width = tileSize, height = tileSize;
                     // check the tile is within the bounds
                     if(!tileLatLng.intersects(clipBounds)) {
@@ -2647,14 +2669,16 @@ var googleMapsV3 = (function() {
                         }
                         //base WMS URL
                         url = lURL + "&BBOX=" + bbox; // set bounding box
-                        // update width and height if necessary
-                        var edge = tileLatLng.getSouthWest().lng() < clipBounds.getNorthEast().lng() &&
-                            tileLatLng.getNorthEast().lng() > clipBounds.getNorthEast().lng();
-                        if(edge) {
-                            width = tileSize *
-                                (clipBounds.getNorthEast().lng() - tileLatLng.getSouthWest().lng()) /
-                                (tileLatLng.getNorthEast().lng() - tileLatLng.getSouthWest().lng());
-                            div.style.borderRight = 'solid 1px #AAAAAA';
+                        if(isClipping) {
+                            // update width and height if necessary
+                            var edge = tileLatLng.getSouthWest().lng() < clipBounds.getNorthEast().lng() &&
+                                tileLatLng.getNorthEast().lng() > clipBounds.getNorthEast().lng();
+                            if(edge) {
+                                width = tileSize *
+                                    (clipBounds.getNorthEast().lng() - tileLatLng.getSouthWest().lng()) /
+                                    (tileLatLng.getNorthEast().lng() - tileLatLng.getSouthWest().lng());
+                                div.style.borderRight = 'solid 1px #AAAAAA';
+                            }
                         }
                     }
                     div.style.backgroundImage = "url('" + url + "')";
@@ -2662,6 +2686,7 @@ var googleMapsV3 = (function() {
                     div.style.height = height + 'px';
                 }
                 div.updateClip();
+                updateOpacity(div, this.opacity);
                 this.tiles.push(div);
                 return div;
             };
@@ -2689,6 +2714,25 @@ var googleMapsV3 = (function() {
                 for(index = 0; index < this.tiles.length; index++) {
                     this.tiles[index].updateClip();
                 }
+            }
+
+            function updateOpacity(div, opacity) {
+                opacity = Math.max(0, Math.min(opacity, 1.0));
+                div.style.opacity = opacity;
+                div.style.filter = 'alpha(opacity=' + (opacity * 100) + ")";
+            }
+
+            WMSLayerClipped.prototype.setOpacity = function(opacity) {
+                this.opacity = opacity;
+                // update tiles width
+                var index;
+                for(index = 0; index < this.tiles.length; index++) {
+                    updateOpacity(this.tiles[index], this.opacity);
+                }
+            }
+
+            WMSLayerClipped.prototype.getOpacity = function() {
+                return this.opacity;
             }
 
             this._map = _map;
@@ -2728,6 +2772,10 @@ var googleMapsV3 = (function() {
             this.setVisible(false);
         }
 
+        w.prototype.activateClipping = function(activate) {
+            this._layer.activateClipping(activate);
+        }
+
         w.prototype.setOpacity = function(opacity) {
             if(this._layer) {
                 this._layer.setOpacity(opacity);
@@ -2747,6 +2795,7 @@ var googleMapsV3 = (function() {
         }
 
         w.prototype.setOnTop = function() {
+            var overlayMaps = this._map.overlayMapTypes;
             this.setZIndex(overlayMaps.length);
         }
 
@@ -2830,8 +2879,6 @@ var googleMapsV3 = (function() {
         }
 
         w.prototype.setVisible = function (visible) {
-
-            debugger;
             this._visible = visible;
 
             if (visible) {
@@ -2854,7 +2901,6 @@ var googleMapsV3 = (function() {
 
         w.prototype.update = function() {
             // add if the map was not already added
-            debugger;
             bbox = "";
             if (!this._featureID)
                 bbox = "&bbox=" + this._bbox;
@@ -2868,7 +2914,6 @@ var googleMapsV3 = (function() {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url);
             xhr.onload = function() {
-                debugger;
                 var response = JSON.parse(xhr.responseText);
                 that.removeAll();
                 that._features = that._map.data.addGeoJson(response, {idPropertyName: that._idPropertyName});
@@ -2944,16 +2989,12 @@ var googleMapsV3 = (function() {
         }
 
         w.prototype.setStyleFunction = function(styleFunction){
-
-            debugger;
             this._styleFunction = styleFunction;
             this._map.data.setStyle( this._styleFunction);
             this._styleOptions = null;
         }
 
         w.prototype.applyStyle = function(){
-
-            debugger;
             if(this._features && this._styleOptions)
             {
                 for (var i=0; i < this._features.length; i++)

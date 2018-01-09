@@ -88,6 +88,8 @@ and open the template in the editor.
             var displayCoordinates = false;
             var displayGrid = false;
             var mapIndex = 0;
+            var activateClipping = false;
+            var uniWMS;
             library.createMap(0, 0, 0, "hybrid", document.getElementById("container"),
                 function(map) {
                     var tests = {
@@ -296,9 +298,26 @@ and open the template in the editor.
                             }
                         },
                         testOpenStreetMaps: function() {
-                            var uniWMS = new library.uniWMSLayerClipped(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
+                            var uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
                                 null, "EPSG:3857", 45.0, -20.0, 60.0, 10.0);
                             uniWMS.setVisible(true);
+                        },
+                        testClippedWMS: function() {
+                            if(!uniWMS) {
+                                uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
+                                    null, "EPSG:3857", 45.0, -20.0, 60.0, 10.0);
+                                uniWMS.setVisible(true);
+                                window.setInterval(function() {
+                                    var opacity = uniWMS.getOpacity() - 0.1;
+                                    if(opacity < 0) {
+                                        opacity = 1.0;
+                                    }
+                                    uniWMS.setOpacity(opacity);
+                                }, 1000);
+                                uniWMS.setOpacity(0.5);
+                            }
+                            activateClipping = !activateClipping;
+                            uniWMS.activateClipping(activateClipping);
                         },
                         testTMS: function() {
                             var uniTMS = new library.uniTMSLayer(map, "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", "ESRI ArcGIS", true, -90, -180, 90, 180);
