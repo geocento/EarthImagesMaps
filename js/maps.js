@@ -2752,16 +2752,16 @@ var googleMapsV3 = (function() {
         w.prototype.setVisible = function (visible) {
             var overlayMaps = this._map.overlayMapTypes;
             // find the layer
-            for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i);
+            var i = this.getMapIndex(this._layer);
             if(visible) {
                 // add if the map was not already added
-                if(i == overlayMaps.length) {
-                    overlayMaps.push(this._layer);
+                if(i == -1) {
+                    insertLayerInMap(overlayMaps, this._layer);
                     this._layer.displayCopyright(true);
                 }
             } else {
                 // remove if the map was added
-                if(i < overlayMaps.length) {
+                if(i != -1) {
                     overlayMaps.removeAt(i);
                 }
                 this._layer.displayCopyright(false);
@@ -2800,19 +2800,24 @@ var googleMapsV3 = (function() {
         }
 
         w.prototype.setZIndex = function(zIndex) {
-            var i = this.getZIndex();
-            if(i == -1) {
+            this._layer.zIndex = zIndex;
+            var i = this.getMapIndex(this._layer);
+            if(i == - 1) {
                 return;
             }
             var overlayMaps = this._map.overlayMapTypes;
             overlayMaps.removeAt(i);
-            overlayMaps.insertAt(zIndex, this._layer);
+            insertLayerInMap(overlayMaps, this._layer);
         }
 
-        w.prototype.getZIndex = function() {
+        w.prototype.getMapIndex = function(layer) {
             var overlayMaps = this._map.overlayMapTypes;
             for (var i = 0, I = overlayMaps.length; i < I && overlayMaps.getAt(i) != this._layer; ++i);
             return i == overlayMaps.length ? -1 : i;
+        }
+
+        w.prototype.getZIndex = function() {
+            return this._layer.zIndex;
         }
 
         return w;
@@ -3006,6 +3011,20 @@ var googleMapsV3 = (function() {
 
         return w;
     })();
+
+    function insertLayerInMap(overlayMaps, _layer) {
+        // insert where zIndex is higher than the others
+        var i;
+        for(i = 0; i < overlayMaps.length; i++) {
+            var layer = overlayMaps.getAt(i);
+            if(layer.zIndex && layer.zIndex > _layer.zIndex) {
+                overlayMaps.insertAt(i, _layer);
+                return;
+            }
+        }
+        // if not found, add at the end
+        overlayMaps.push(_layer);
+    }
 
     _.codeAddress = function(address, callback) {
         if(!this.geocoder) {

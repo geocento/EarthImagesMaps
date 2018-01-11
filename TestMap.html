@@ -297,6 +297,16 @@ and open the template in the editor.
                                 this.uniWMS.setOpacity(1.0); //Math.random());
                             }
                         },
+                        testWMSZIndex: function() {
+                            var uniWMS = new library.uniWMSLayer(map, "http://projects.geocento.com/sitemonitoring/overlay?filename=LC81900312015351LGN00.tiff&", //"http://192.168.2.42:8080/CMLFMC"
+                                //"/getql?productid=DG-1050410012309400&",
+                                "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                            var uniWMSOther = new library.uniWMSLayer(map, "http://sedac.ciesin.columbia.edu/geoserver/wms?", //"http://192.168.2.42:8080/CMLFMC"
+                                //"/getql?productid=DG-1050410012309400&",
+                                "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                            map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
+
+                        },
                         testOpenStreetMaps: function() {
                             var uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
                                 null, "EPSG:3857", 45.0, -20.0, 60.0, 10.0);
