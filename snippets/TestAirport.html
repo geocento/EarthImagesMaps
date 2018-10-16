@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Airpott DEM and obstacles rendering</title>
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>Hello World!</title>
+    <script src="../production/Cesium/Cesium.js"></script>
+    <style>
+        @import url(../production/Cesium/Widgets/widgets.css);
+        html, body, #cesiumContainer {
+            width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<script>
+
+    Cesium.BingMapsApi.defaultKey = 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf';
+
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        terrainExaggeration : 0.1,
+    });
+    var terrainProvider = new Cesium.CesiumTerrainProvider({
+        url : 'http://31.171.246.121:8095/tilesets/aden'
+    });
+    viewer.scene.terrainProvider = terrainProvider;
+    //  viewer.scene.globe.enableLighting = true;
+
+    var ellipsoid = Cesium.Ellipsoid.WGS84;
+    var scene = viewer.scene;
+    scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(45, 12.7, 45.1, 12.8), ellipsoid);
+</script>
+
+</body>
+</html>

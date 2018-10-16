@@ -14,7 +14,7 @@ and open the template in the editor.
     <script type="text/javascript" src="js/DrawHelper.js"></script>
     <script type="text/javascript" src="js/cesium.js?123"></script>
 
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&language=en-GB"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC61cY1T98Pr7jQxZpAmtWsxW97geuBO4c&libraries=geometry&language=en-GB"></script>
     <script type="text/javascript" src="js/maps.js"></script>
 
     <script type="text/javascript" src="js/spatial_query/spatial_query.js"></script>
@@ -63,13 +63,13 @@ and open the template in the editor.
 
       <script type="application/javascript">
           var mapsConfig = {
-              googleMapId: "hybrid",
+              googleMapId: "roadmap",
               bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf'
           };
       </script>
 
   </head>
-  <body onload="start(googleMapsV3)">
+  <body onload="start(CesiumMaps)">
 
     <div id="container"></div>
     <div id="toolbar">
@@ -298,13 +298,17 @@ and open the template in the editor.
                             }
                         },
                         testWMSZIndex: function() {
-                            var uniWMS = new library.uniWMSLayer(map, "http://projects.geocento.com/sitemonitoring/overlay?filename=LC81900312015351LGN00.tiff&", //"http://192.168.2.42:8080/CMLFMC"
-                                //"/getql?productid=DG-1050410012309400&",
-                                "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                            uniWMS = new library.uniWMSLayer(map,
+                                "http://31.171.246.121:8080/geoserver/operator/wms?", "1.1.1", "sKk4zAJzNmj9EMUz_wxod1TEYkkmqePAY_True_colour_image", "British Geographic Survey",
+                                null, "EPSG:3857", 0.01 , 104, 0.3, 105);
+                            uniWMS.setVisible(true);
+                            uniWMS.setOpacity(1.0);
                             var uniWMSOther = new library.uniWMSLayer(map, "http://sedac.ciesin.columbia.edu/geoserver/wms?", //"http://192.168.2.42:8080/CMLFMC"
                                 //"/getql?productid=DG-1050410012309400&",
                                 "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
-                            map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
+                            uniWMSOther.setVisible(true);
+                            uniWMSOther.setOpacity(1.0);
+                            //map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
 
                         },
                         testOpenStreetMaps: function() {
@@ -328,6 +332,17 @@ and open the template in the editor.
                             }
                             activateClipping = !activateClipping;
                             uniWMS.activateClipping(activateClipping);
+                        },
+                        testClippedWMSMore: function() {
+                            if(!uniWMS) {
+                                uniWMS = new library.uniWMSLayer(map,
+                                    "http://31.171.246.121:8080/geoserver/operator/wms?", "1.1.1", "sKk4zAJzNmj9EMUz_wxod1TEYkkmqePAY_True_colour_image", "British Geographic Survey",
+                                    null, "EPSG:3857", 0.01 , 104, 0.3, 105);
+                                uniWMS.setVisible(true);
+                            }
+                            activateClipping = !activateClipping;
+                            uniWMS.activateClipping(activateClipping);
+                            map.setCenter(0.2, 104);
                         },
                         testTMS: function() {
                             var uniTMS = new library.uniTMSLayer(map, "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", "ESRI ArcGIS", true, -90, -180, 90, 180);

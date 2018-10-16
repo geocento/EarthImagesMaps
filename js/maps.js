@@ -178,7 +178,7 @@ var googleMapsV3 = (function() {
                 panControl: false,
                 zoomControl: true,
                 zoomControlOptions: {
-                    style: google.maps.ZoomControlStyle.SMALL
+                    position: google.maps.ControlPosition.TOP_LEFT
                 },
                 mapTypeControlOptions: {
                     mapTypeIds: this.mapTypeIds,
@@ -190,6 +190,7 @@ var googleMapsV3 = (function() {
                     position: gm.ControlPosition.BOTTOM_LEFT
                 },
                 rotateControl: true,
+                fullscreenControl: false,
                 mapTypeId: mapId ? mapId : gm.MapTypeId.HYBRID
             };
             var map = new gm.Map(div, myOptions);
@@ -2564,6 +2565,7 @@ var googleMapsV3 = (function() {
                     this.marker.setDraggable(true);
                     var _self = this;
                     google.maps.event.addListener(this.marker, "drag", function(e) {_self.markerUpdated(e);});
+                    google.maps.event.addListener(this.marker, "dragend", function(e) {_self.markerUpdated(e);});
                     this.marker.setTitle("Drag to move bounds for overlay");
                 } else {
                     if(this.marker) {
@@ -2593,7 +2595,7 @@ var googleMapsV3 = (function() {
             WMSLayerClipped.prototype.getMarkerPosition = function(lng) {
                 var clipBounds = this.clipBounds;
                 var mapBounds = _map.getBounds();
-                // position the marker to be in the midle of the layer bounds as well as the map bounds which ever is smaller
+                // position the marker to be vertically centered of the layer bounds as well as the map bounds which ever is smaller
                 var lat;
                 if(!mapBounds.intersects(clipBounds) || boundsIncluded(mapBounds, clipBounds)) {
                     lat = clipBounds.getSouthWest().lat() +
@@ -2610,6 +2612,10 @@ var googleMapsV3 = (function() {
                         lat = mapBounds.getSouthWest().lat() +
                             (clipBounds.getNorthEast().lat() - mapBounds.getSouthWest().lat()) / 2;
                     }
+                }
+                // if the image is visible but the marker is outside the map bounds, make sure it appears on the east side
+                if(mapBounds.intersects(clipBounds) && lng > mapBounds.getNorthEast().lng()) {
+                    lng = mapBounds.getNorthEast().lng()
                 }
                 return new gm.LatLng(lat, lng);
             }
@@ -2638,11 +2644,15 @@ var googleMapsV3 = (function() {
                 var neCoord = proj.fromPointToLatLng(new gm.Point((first + 1) * tileSize / zfactor, coord.y * tileSize / zfactor));
                 var tileLatLng = new gm.LatLngBounds(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())),
                     new gm.LatLng(Math.max(swCoord.lat(), neCoord.lat()), Math.max(swCoord.lng(), neCoord.lng())));
-                var div = ownerDocument.createElement('div');
+                var containerDiv = ownerDocument.createElement('div');
+                containerDiv.style.background = 'none';
+                containerDiv.style.backgroundSize = 'cover';
+                var div = document.createElement('div');
                 div.style.background = 'none';
                 div.style.backgroundSize = 'cover';
+                containerDiv.appendChild(div);
                 var _self = this;
-                div.updateClip = function() {
+                containerDiv.updateClip = function() {
                     // set no right border by default
                     div.style.borderRight = 'none';
                     var clipBounds = _self.clipBounds;
@@ -2682,13 +2692,13 @@ var googleMapsV3 = (function() {
                         }
                     }
                     div.style.backgroundImage = "url('" + url + "')";
-                    div.style.width = width + 'px';
+                    div.style.width = Math.floor(width) + 'px';
                     div.style.height = height + 'px';
                 }
-                div.updateClip();
-                updateOpacity(div, this.opacity);
-                this.tiles.push(div);
-                return div;
+                containerDiv.updateClip();
+                updateOpacity(containerDiv, this.opacity);
+                this.tiles.push(containerDiv);
+                return containerDiv;
             };
 
             WMSLayerClipped.prototype.releaseTile = function(node) {

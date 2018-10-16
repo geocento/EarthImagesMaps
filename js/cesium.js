@@ -65,8 +65,11 @@ var CesiumMaps = (function() {
             })
         };
 
+        var defaultMap = mapsIds["Bing Satellite Maps"]
+        var imageryProvider = mapId ? mapsIds[mapId] : defaultMap;
+        var imageryProvider = imageryProvider ? imageryProvider : defaultMap;
         var cesiumWidget = new Cesium.CesiumWidget(frameDivMap, {
-            imageryProvider: mapsIds[mapId ? mapId : "Bing Satellite Maps"],
+            imageryProvider: imageryProvider,
             scene3DOnly: true
         });
 
@@ -74,10 +77,13 @@ var CesiumMaps = (function() {
         this._scene = scene;
 
         // add terrain elevation
+/*
         var cesiumTerrainProviderHeightmaps = new Cesium.CesiumTerrainProvider({
             url : '//assets.agi.com/stk-terrain/world',
             credit : 'Terrain data courtesy Analytical Graphics, Inc.'
         });
+*/
+        var cesiumTerrainProviderHeightmaps = Cesium.createWorldTerrain();
 
         scene.terrainProvider = cesiumTerrainProviderHeightmaps;
 
@@ -99,7 +105,7 @@ var CesiumMaps = (function() {
         var gl = this;
 
         gl.setCenter = function(lat, lng) {
-            scene.camera.setPositionCartographic(Cesium.Cartographic.fromDegrees(lng, lat, getHeight()));
+            scene.camera.setView({destination: Cesium.Cartesian3.fromDegrees(lng, lat, getHeight())});
         }
 
         gl.getCenter = function() {
@@ -110,7 +116,7 @@ var CesiumMaps = (function() {
         gl.setZoomLevel = function(level) {
             var position = getCameraCartographicPosition();
             position.height = convertFromZoom(level);
-            scene.camera.setPositionCartographic(position);
+            scene.camera.setView({destination: Cesium.Cartesian3.fromDegrees(position.longitude, position.latitude, getHeight())});
         }
 
         gl.getZoomLevel = function() {
@@ -142,7 +148,7 @@ var CesiumMaps = (function() {
         }
 
         gl.setBounds = function(swLat, swLng, neLat, neLng) {
-            scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat), ellipsoid);
+            scene.camera.setView({destination: Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat)});
         }
 
         gl.getMapTypeIds = function() {
@@ -395,6 +401,7 @@ var CesiumMaps = (function() {
         gl.convertLatLngToScreenPosition = function(lat, lng) {
             // TODO - get the screen position based on lat lng coordinates
             var offset = findPos(container);
+            return {x: 0, y: 0};
         }
 
         gl.displayRuler = function(display) {
@@ -1382,7 +1389,7 @@ var CesiumMaps = (function() {
 
     }
 
-    _.TMSLayer.prototype = new Cesium.TileMapServiceImageryProvider();
+    _.TMSLayer.prototype = Cesium.createTileMapServiceImageryProvider();
 
     _.TMSLayer.prototype.formatUrl = function(x, y, level) {
         return this._url.replace("$z", level).replace("$y", this._yFlip ? y : (1 << level) - y - 1).replace("$x", x);
@@ -1440,7 +1447,7 @@ var CesiumMaps = (function() {
             //create the Bounding box string
             // handles 1.3.0 wms by ordering lat, lng instead of lng, lat
             var bbox;
-            var nativeExtent = this._tilingScheme.tileXYToNativeRectangle(x, y, level);
+            var nativeExtent = this._tileProvider._tilingScheme.tileXYToNativeRectangle(x, y, level);
             if (invertAxisOrder) {
                 bbox = nativeExtent.south + "," + nativeExtent.west + "," + nativeExtent.north + "," + nativeExtent.east;
             } else {
@@ -1461,6 +1468,10 @@ var CesiumMaps = (function() {
     }
 
     _.uniWMSLayer.prototype = new _.uniLayer;
+
+    _.uniWMSLayer.prototype.activateClipping = function(activate) {
+        // do nothing as it is not supported yet
+    }
 
     return _;
 })();
