@@ -1188,6 +1188,10 @@ var googleMapsV3 = (function() {
             }
         });
         _.setListener(marker, "dragend", function(latLng) {
+            if(_this.constraintPath && !gm.geometry.poly.containsLocation(marker.getPosition(), _this.constraintPath)) {
+                for (var i = 0, I = _this.markers.length; i < I && _this.markers[i] != marker; ++i);
+                marker.setPosition(path.getAt(i));
+            }
             _this.editCallback(_this.getPositions());
         });
         marker.setTitle("Double click to remove this point");
@@ -1264,6 +1268,10 @@ var googleMapsV3 = (function() {
                     }
                 });
                 _.setListener(marker, "dragend", function() {
+                    // force marker back into position if out of constraint
+                    if(_this.constraintPath && !gm.geometry.poly.containsLocation(marker.getPosition(), _this.constraintPath)) {
+                        marker.setPosition(_this.path.getAt(marker.markerPos));
+                    }
                     _this.path.removeAt(marker.markerPos);
                     _this.addPoint(marker.getPosition(), marker.markerPos);
                     _this.updateEditMarkers(true);
@@ -2561,7 +2569,11 @@ var googleMapsV3 = (function() {
                     this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
                         new gm.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng() +
                             (bounds.getNorthEast().lng() - bounds.getSouthWest().lng())));
-                    this.marker = _.createMarker(map2D.map, this.getMarkerPosition(this.clipBounds.getNorthEast().lng()), _.defaultDragMarker);
+                    this.marker = _.createMarker(map2D.map, this.getMarkerPosition(this.clipBounds.getNorthEast().lng()), {
+                        url: "./img/dragClipIcon.png",
+                        shiftX: 12,
+                        shiftY: 12
+                    });
                     this.marker.setDraggable(true);
                     var _self = this;
                     google.maps.event.addListener(this.marker, "drag", function(e) {_self.markerUpdated(e);});
@@ -2647,14 +2659,19 @@ var googleMapsV3 = (function() {
                 var containerDiv = ownerDocument.createElement('div');
                 containerDiv.style.background = 'none';
                 containerDiv.style.backgroundSize = 'cover';
+                // containerDiv.style.border = '1px solid white';
                 var div = document.createElement('div');
+                div.style.position = 'relative';
                 div.style.background = 'none';
                 div.style.backgroundSize = 'cover';
                 containerDiv.appendChild(div);
                 var _self = this;
                 containerDiv.updateClip = function() {
-                    // set no right border by default
-                    div.style.borderRight = 'none';
+                    // remove border by default
+                    if(div.border) {
+                        div.removeChild(div.border);
+                        delete div.border;
+                    }
                     var clipBounds = _self.clipBounds;
                     if(!clipBounds) {
                         clipBounds = bounds;
@@ -2684,10 +2701,50 @@ var googleMapsV3 = (function() {
                             var edge = tileLatLng.getSouthWest().lng() < clipBounds.getNorthEast().lng() &&
                                 tileLatLng.getNorthEast().lng() > clipBounds.getNorthEast().lng();
                             if(edge) {
+                                // calculate width
                                 width = tileSize *
                                     (clipBounds.getNorthEast().lng() - tileLatLng.getSouthWest().lng()) /
                                     (tileLatLng.getNorthEast().lng() - tileLatLng.getSouthWest().lng());
-                                div.style.borderRight = 'solid 1px #AAAAAA';
+                                // add a border
+                                var tileHeight = tileLatLng.getNorthEast().lat() - tileLatLng.getSouthWest().lat();
+                                // check position of tile
+                                var border = document.createElement('div');
+                                border.style.position = 'absolute';
+                                border.style.width = '0px';
+                                border.style.background = 'none';
+                                border.style.right = '0px';
+                                // we are on the top tile
+                                var topCorner = clipBounds.getNorthEast().lat() < tileLatLng.getNorthEast().lat();
+                                var bottomCorner = clipBounds.getSouthWest().lat() > tileLatLng.getSouthWest().lat();
+                                var bottom = 0, heightBorder = tileSize;
+                                if(topCorner) {
+                                    if(bottomCorner) {
+                                        // fully contained within the tile
+                                        bottom = (tileSize *
+                                            (clipBounds.getSouthWest().lat() - tileLatLng.getSouthWest().lat()) /
+                                            tileHeight);
+                                        heightBorder = tileSize *
+                                            (clipBounds.getNorthEast().lat() - clipBounds.getSouthWest().lat()) /
+                                            tileHeight;
+                                    } else {
+                                        bottom = 0;
+                                        heightBorder = tileSize *
+                                            (clipBounds.getNorthEast().lat() - tileLatLng.getSouthWest().lat()) /
+                                            tileHeight;
+                                    }
+                                } else if(bottomCorner) {
+                                    heightBorder = (tileSize *
+                                        (tileLatLng.getNorthEast().lat() - clipBounds.getSouthWest().lat()) /
+                                        tileHeight);
+                                    bottom = tileSize - heightBorder;
+                                } else {
+                                    // full tile
+                                }
+                                border.style.bottom = bottom + 'px';
+                                border.style.height = heightBorder + 'px';
+                                border.style.borderRight = 'solid 2px #FFFFFF';
+                                div.appendChild(border);
+                                div.border = border;
                             }
                         }
                     }

@@ -23,12 +23,12 @@
     Cesium.BingMapsApi.defaultKey = 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf';
 
     var viewer = new Cesium.Viewer('cesiumContainer', {
-        terrainExaggeration : 0.1,
+        // terrainExaggeration : 10,
+        terrainProvider: new Cesium.CesiumTerrainProvider({
+            url : 'http://178.22.71.26:8084/tilesets/testreduced'
+        })
     });
-    var terrainProvider = new Cesium.CesiumTerrainProvider({
-        url : 'http://31.171.246.121:8095/tilesets/aden'
-    });
-    viewer.scene.terrainProvider = terrainProvider;
+    // viewer.scene.terrainProvider = terrainProvider;
     //  viewer.scene.globe.enableLighting = true;
 
     var ellipsoid = Cesium.Ellipsoid.WGS84;

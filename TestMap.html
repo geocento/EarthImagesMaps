@@ -69,7 +69,7 @@ and open the template in the editor.
       </script>
 
   </head>
-  <body onload="start(CesiumMaps)">
+  <body onload="start(googleMapsV3)">
 
     <div id="container"></div>
     <div id="toolbar">
@@ -337,9 +337,11 @@ and open the template in the editor.
                             if(!uniWMS) {
                                 uniWMS = new library.uniWMSLayer(map,
                                     "http://31.171.246.121:8080/geoserver/operator/wms?", "1.1.1", "sKk4zAJzNmj9EMUz_wxod1TEYkkmqePAY_True_colour_image", "British Geographic Survey",
-                                    null, "EPSG:3857", 0.01 , 104, 0.3, 105);
+                                    null, "EPSG:3857", -0.1 , 104, 0.3, 105);
                                 uniWMS.setVisible(true);
                             }
+                            new library.uniRectangle(map, -0.1 , 104, 0.3, 105, {color: '#ff0', thickness: 1, opacity: 0.3, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false,
+                                callback: function(){}});
                             activateClipping = !activateClipping;
                             uniWMS.activateClipping(activateClipping);
                             map.setCenter(0.2, 104);
