@@ -14,7 +14,7 @@ and open the template in the editor.
     <script type="text/javascript" src="js/DrawHelper.js"></script>
     <script type="text/javascript" src="js/cesium.js?123"></script>
 
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&language=en-GB"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC61cY1T98Pr7jQxZpAmtWsxW97geuBO4c&libraries=geometry&language=en-GB"></script>
     <script type="text/javascript" src="js/maps.js"></script>
 
     <script type="text/javascript" src="js/spatial_query/spatial_query.js"></script>
@@ -63,13 +63,17 @@ and open the template in the editor.
 
       <script type="application/javascript">
           var mapsConfig = {
-              googleMapId: "hybrid",
-              bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf'
+              googleMapId: "roadmap",
+              bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf',
+              terrainProvider: {
+                  url: '//10.98.11.204/terrain/',
+                  credits: 'SRTM 900m tiles from NASA'
+              }
           };
       </script>
 
   </head>
-  <body onload="start(googleMapsV3)">
+  <body onload="start(CesiumMaps)">
 
     <div id="container"></div>
     <div id="toolbar">
@@ -79,7 +83,7 @@ and open the template in the editor.
 
     <script type="text/javascript">
         var zoomLevel = 7;
-        var position = [10.0, 10.0];
+        var position = [45.0, 0.0];
         function start(library) {
         	// make sure the map div is empty
         	document.getElementById("container").innerHTML = "";
@@ -285,7 +289,7 @@ and open the template in the editor.
 /*
                                 this.uniWMS = new library.uniWMSLayer(map, "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3", "gpw-v3:gpw-v3-population-density_2000", "Population", null, "EPSG:3857", -90, -180, 90, 180);
 */
-                                this.uniWMS = new library.uniWMSLayer(map, "http://projects.geocento.com/sitemonitoring/overlay?filename=LC81900312015351LGN00.tiff&", //"http://192.168.2.42:8080/CMLFMC"
+                                this.uniWMS = new library.uniWMSLayer(map, "http://10.98.11.204/overlay/?productid=DS_PHR1A_201810211004230_FR1_PX_E012N42_0114_05204&", //"http://192.168.2.42:8080/CMLFMC"
                                     //"/getql?productid=DG-1050410012309400&",
                                         "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
 /*
@@ -295,16 +299,21 @@ and open the template in the editor.
 */
                                 this.uniWMS.setVisible(true);
                                 this.uniWMS.setOpacity(1.0); //Math.random());
+                                map.setCenter(42.5, 12.3)
                             }
                         },
                         testWMSZIndex: function() {
-                            var uniWMS = new library.uniWMSLayer(map, "http://projects.geocento.com/sitemonitoring/overlay?filename=LC81900312015351LGN00.tiff&", //"http://192.168.2.42:8080/CMLFMC"
-                                //"/getql?productid=DG-1050410012309400&",
-                                "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                            uniWMS = new library.uniWMSLayer(map,
+                                "http://31.171.246.121:8080/geoserver/operator/wms?", "1.1.1", "sKk4zAJzNmj9EMUz_wxod1TEYkkmqePAY_True_colour_image", "British Geographic Survey",
+                                null, "EPSG:3857", 0.01 , 104, 0.3, 105);
+                            uniWMS.setVisible(true);
+                            uniWMS.setOpacity(1.0);
                             var uniWMSOther = new library.uniWMSLayer(map, "http://sedac.ciesin.columbia.edu/geoserver/wms?", //"http://192.168.2.42:8080/CMLFMC"
                                 //"/getql?productid=DG-1050410012309400&",
                                 "1.1.1", "quicklook", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
-                            map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
+                            uniWMSOther.setVisible(true);
+                            uniWMSOther.setOpacity(1.0);
+                            //map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
 
                         },
                         testOpenStreetMaps: function() {
@@ -328,6 +337,19 @@ and open the template in the editor.
                             }
                             activateClipping = !activateClipping;
                             uniWMS.activateClipping(activateClipping);
+                        },
+                        testClippedWMSMore: function() {
+                            if(!uniWMS) {
+                                uniWMS = new library.uniWMSLayer(map,
+                                    "http://31.171.246.121:8080/geoserver/operator/wms?", "1.1.1", "sKk4zAJzNmj9EMUz_wxod1TEYkkmqePAY_True_colour_image", "British Geographic Survey",
+                                    null, "EPSG:3857", -0.1 , 104, 0.3, 105);
+                                uniWMS.setVisible(true);
+                            }
+                            new library.uniRectangle(map, -0.1 , 104, 0.3, 105, {color: '#ff0', thickness: 1, opacity: 0.3, fillColor: '#f00', fillOpacity: 0.7, clickable: true, geodesic: false,
+                                callback: function(){}});
+                            activateClipping = !activateClipping;
+                            uniWMS.activateClipping(activateClipping);
+                            map.setCenter(0.2, 104);
                         },
                         testTMS: function() {
                             var uniTMS = new library.uniTMSLayer(map, "http://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/$z/$y/$x.png", "ESRI ArcGIS", true, -90, -180, 90, 180);

@@ -65,8 +65,11 @@ var CesiumMaps = (function() {
             })
         };
 
+        var defaultMap = mapsIds["Bing Satellite Maps"]
+        var imageryProvider = mapId ? mapsIds[mapId] : defaultMap;
+        var imageryProvider = imageryProvider ? imageryProvider : defaultMap;
         var cesiumWidget = new Cesium.CesiumWidget(frameDivMap, {
-            imageryProvider: mapsIds[mapId ? mapId : "Bing Satellite Maps"],
+            imageryProvider: imageryProvider,
             scene3DOnly: true
         });
 
@@ -74,12 +77,15 @@ var CesiumMaps = (function() {
         this._scene = scene;
 
         // add terrain elevation
-        var cesiumTerrainProviderHeightmaps = new Cesium.CesiumTerrainProvider({
-            url : '//assets.agi.com/stk-terrain/world',
-            credit : 'Terrain data courtesy Analytical Graphics, Inc.'
-        });
+        var terrainProvider = mapsConfig && mapsConfig.terrainProvider;
+        if(terrainProvider) {
+            var cesiumTerrainProviderHeightmaps = new Cesium.CesiumTerrainProvider({
+                url : terrainProvider.url,
+                credit : terrainProvider.credits
+            });
 
-        scene.terrainProvider = cesiumTerrainProviderHeightmaps;
+            scene.terrainProvider = cesiumTerrainProviderHeightmaps;
+        }
 
         // start the draw helper to enable shape creation and editing
         var drawHelper = new DrawHelper(cesiumWidget);
@@ -99,18 +105,28 @@ var CesiumMaps = (function() {
         var gl = this;
 
         gl.setCenter = function(lat, lng) {
-            scene.camera.setPositionCartographic(Cesium.Cartographic.fromDegrees(lng, lat, getHeight()));
+           // scene.camera.position = Cesium.Cartesian3.fromDegrees(lng, lat, getHeight());
+            var position = Cesium.Cartesian3.fromDegrees(lng, lat, getHeight(), ellipsoid);
+            scene.camera.position = position;
+            scene.camera.flyTo({
+                destination : position
+            });
         }
 
         gl.getCenter = function() {
-            scene.camera.lookDown();
+            scene.camera.look(scene.camera.position, Cesium.Math.toRadians(360));
             return _.convertPath([scene.camera.position]);
         }
 
         gl.setZoomLevel = function(level) {
             var position = getCameraCartographicPosition();
             position.height = convertFromZoom(level);
-            scene.camera.setPositionCartographic(position);
+            var destination = Cesium.Cartesian3.fromDegrees(Cesium.Math.toDegrees(position.longitude),
+                                                            Cesium.Math.toDegrees(position.latitude),
+                                                            position.height, ellipsoid);
+            scene.camera.flyTo({
+                destination : destination
+            });
         }
 
         gl.getZoomLevel = function() {
@@ -142,7 +158,9 @@ var CesiumMaps = (function() {
         }
 
         gl.setBounds = function(swLat, swLng, neLat, neLng) {
-            scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat), ellipsoid);
+            //scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat), ellipsoid);
+            var rectangle = Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat);
+            scene.camera.flyTo({destination:rectangle} );
         }
 
         gl.getMapTypeIds = function() {
@@ -279,6 +297,14 @@ var CesiumMaps = (function() {
             }
         }
 
+        gl.showFullscreen = function(enable) {
+           //Shows or hides the fullscreen control in google maps
+        }
+
+        gl.showZoom = function(enable) {
+            //Shows or hides the zoom control in google maps
+        }
+
         gl.displayCoordinates = function(display) {
 
             if(this.coordinatesOverlay == undefined) {
@@ -328,7 +354,8 @@ var CesiumMaps = (function() {
         gl.addZoomOnShift = function(callback) {
             var globe = this;
             var map = this.map;
-            container.parentElement.addEventListener("mousedown", function(event) {
+
+            /*container.parentElement.addEventListener("mousedown", function(event) {
                 if(event.shiftKey) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -348,7 +375,32 @@ var CesiumMaps = (function() {
                             });
                     }
                 }
-            }, true);
+            }, true);*/
+
+            // Got from https://gist.github.com/theplatapi/0a7d789afc8028a3c20b
+            var screenSpaceEventHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            scene.screenSpaceCameraController.enableLook = false;
+
+            screenSpaceEventHandler.setInputAction(function startClickShift() {
+
+                var cartesian = scene.camera.pickEllipsoid(new Cesium.Cartesian2(event.clientX, event.clientY), ellipsoid);
+                if(cartesian) {
+                    dragging = true;
+                    drawHelper.startDrawingZoomExtent(ellipsoid.cartesianToCartographic(cartesian),
+                        {strokeColor: "#ff0000",
+                            strokeOpacity: 0.9,
+                            strokeThickness: 1,
+                            fillColor: "#ffffff",
+                            fillOpacity: 0.1,
+                            callback: function(extent) {
+                                callback(Cesium.Math.toDegrees(extent.south), Cesium.Math.toDegrees(extent.west), Cesium.Math.toDegrees(extent.north), Cesium.Math.toDegrees(extent.east));
+                            }
+
+                        });
+                }
+
+            }, Cesium.ScreenSpaceEventType.LEFT_DOWN, Cesium.KeyboardEventModifier.SHIFT);
+
         }
 
         gl.openInfoWindow = function(lat, lng, content) {
@@ -395,6 +447,7 @@ var CesiumMaps = (function() {
         gl.convertLatLngToScreenPosition = function(lat, lng) {
             // TODO - get the screen position based on lat lng coordinates
             var offset = findPos(container);
+            return {x: 0, y: 0};
         }
 
         gl.displayRuler = function(display) {
@@ -1185,10 +1238,10 @@ var CesiumMaps = (function() {
         });
 
         // force edit to true
-        var parentEditMode = surface.setEditMode;
+        /*var parentEditMode = surface.setEditMode;
         surface.setEditMode = function() {
             parentEditMode(true);
-        }
+        }*/
 
         globe.addOverlay(this);
 
@@ -1382,7 +1435,7 @@ var CesiumMaps = (function() {
 
     }
 
-    _.TMSLayer.prototype = new Cesium.TileMapServiceImageryProvider();
+    _.TMSLayer.prototype = new Cesium.createTileMapServiceImageryProvider({url:""});
 
     _.TMSLayer.prototype.formatUrl = function(x, y, level) {
         return this._url.replace("$z", level).replace("$y", this._yFlip ? y : (1 << level) - y - 1).replace("$x", x);
@@ -1415,6 +1468,8 @@ var CesiumMaps = (function() {
             credit: copyright,
             enablePickFeatures: false
         });
+        //srs = srs ? srs.toUpperCase() : "EPSG:4326";
+        // actually force srs to be 4326 as Cesium only supports 4326
         srs = "EPSG:4326";
         var version3 = version.indexOf("1.3") == 0;
         var tileSize = 256;
@@ -1433,6 +1488,8 @@ var CesiumMaps = (function() {
         lURL += "&format=image/png";
         // for the projections that require axis inversion under version 3
         var invertAxisOrder = version3 == true && srs == "EPSG:4326";
+        // either 4326 or 3857
+        var tilingScheme = srs == "EPSG:4326" ? new Cesium.GeographicTilingScheme() : new Cesium.WebMercatorTilingScheme();
 
         // rewrite the requestImage to handle WMS 1.3.0
         var proxy = new _.Proxy(lURL + "&BBOX=");
@@ -1440,7 +1497,7 @@ var CesiumMaps = (function() {
             //create the Bounding box string
             // handles 1.3.0 wms by ordering lat, lng instead of lng, lat
             var bbox;
-            var nativeExtent = this._tilingScheme.tileXYToNativeRectangle(x, y, level);
+            var nativeExtent = tilingScheme.tileXYToNativeRectangle(x, y, level);
             if (invertAxisOrder) {
                 bbox = nativeExtent.south + "," + nativeExtent.west + "," + nativeExtent.north + "," + nativeExtent.east;
             } else {
@@ -1461,6 +1518,10 @@ var CesiumMaps = (function() {
     }
 
     _.uniWMSLayer.prototype = new _.uniLayer;
+
+    _.uniWMSLayer.prototype.activateClipping = function(activate) {
+        // do nothing as it is not supported yet
+    }
 
     return _;
 })();

@@ -1,6 +1,6 @@
 <project name="EarthImagesMap" basedir="." default="default">
 
-    <property name="version" value="v0.5" />
+    <property name="version" value="v0.6" />
 	<property name="src.dir" value="js" />
     <property name="artifactsdir" value="production" />
 
