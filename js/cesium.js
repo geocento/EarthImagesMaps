@@ -87,6 +87,8 @@ var CesiumMaps = (function() {
             scene.terrainProvider = cesiumTerrainProviderHeightmaps;
         }
 
+        //scene.globe.depthTestAgainstTerrain = true;
+        
         // start the draw helper to enable shape creation and editing
         var drawHelper = new DrawHelper(cesiumWidget);
         this._drawHelper = drawHelper;

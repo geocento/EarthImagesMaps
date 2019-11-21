@@ -2278,7 +2278,7 @@ var googleMapsV3 = (function() {
                     if(bounds) {
                         var tileLatLng = new gm.LatLngBounds(swCoord, neCoord);
                         if(!tileLatLng.intersects(bounds)) {
-                            return "http://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
+                            return "https://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
                         }
                     }
                     return baseUrlPattern.replace("$z", zoom).replace("$y", yFlip ? coord.y : (1 << zoom) - coord.y - 1).replace("$x", mod(coord.x, (1 << zoom)));
@@ -2686,7 +2686,7 @@ var googleMapsV3 = (function() {
                     var width = tileSize, height = tileSize;
                     // check the tile is within the bounds
                     if(!tileLatLng.intersects(clipBounds)) {
-                        url = "http://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
+                        url = "https://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
                     } else {
                         // convert from wgs84 lat,lng to new srs coordinates
                         var swConverted = srsConversion(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())));
