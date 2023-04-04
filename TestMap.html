@@ -311,6 +311,17 @@ and open the template in the editor.
                             //map.addWMSMapType("Population density", "Population", "http://sedac.ciesin.columbia.edu/geoserver/wms?", "1.3.0", "gpw-v3:gpw-v3-population-density_2000", "", "EPSG:3857");
 
                         },
+                        testWMSInterceptor: function() {
+                            this.uniWMS = new library.uniWMSLayer(map,
+                                    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?", //"https://demowls.geocento.com/map/wms/5576a6ac-d744-4e22-9b30-dca10505df1d/?token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJmZ2lWRmFhWWdpRldUdU40IiwiaWF0IjoxNjgwNjA2NzA4LCJzdWIiOiI1NTc2YTZhYy1kNzQ0LTRlMjItOWIzMC1kY2ExMDUwNWRmMWQiLCJpc3MiOiJFSU5FTyIsIm1hcGFjY2VzcyI6IioiLCJleHAiOjE2ODA2MTM5MDh9.8R7G1Aeb7iKLWnZM2rCdZzMLFh_AJ0q7HsZdODQ3fdU&", //"http://192.168.2.42:8080/CMLFMC"
+                                    "1.1.1", "GEBCO_LATEST_SUB_ICE_TOPO", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                            this.uniWMS.setInterceptor(function(xhr) {
+                              xhr.setRequestHeader('Authorization', 'Bearer 1223345667700989');
+                              console.log("Called interceptor");
+                            });
+                            this.uniWMS.setVisible(true);
+                            this.uniWMS.setOpacity(1.0); //Math.random());
+                        },
                         testOpenStreetMaps: function() {
                             var uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
                                 null, "EPSG:3857", 45.0, -20.0, 60.0, 10.0);
