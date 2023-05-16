@@ -67,7 +67,7 @@ var CesiumMaps = (function() {
 
         var defaultMap = mapsIds["Bing Satellite Maps"]
         var imageryProvider = mapId ? mapsIds[mapId] : defaultMap;
-        var imageryProvider = imageryProvider ? imageryProvider : defaultMap;
+        imageryProvider = imageryProvider ? imageryProvider : defaultMap;
         var cesiumWidget = new Cesium.CesiumWidget(frameDivMap, {
             imageryProvider: imageryProvider,
             scene3DOnly: true
@@ -76,16 +76,15 @@ var CesiumMaps = (function() {
         var scene = cesiumWidget.scene;
         this._scene = scene;
 
-        // add terrain elevation
-/*
-        var cesiumTerrainProviderHeightmaps = new Cesium.CesiumTerrainProvider({
-            url : '//assets.agi.com/stk-terrain/world',
-            credit : 'Terrain data courtesy Analytical Graphics, Inc.'
-        });
-*/
-        var cesiumTerrainProviderHeightmaps = Cesium.createWorldTerrain();
-
-        scene.terrainProvider = cesiumTerrainProviderHeightmaps;
+        var terrainProvider = mapsConfig && mapsConfig.terrainProvider;
+        if(terrainProvider) {
+            // add terrain elevation
+            var cesiumTerrainProviderHeightmaps = new Cesium.CesiumTerrainProvider({
+                url : terrainProvider.url,
+                credit : terrainProvider.credits
+            });
+            scene.terrainProvider = cesiumTerrainProviderHeightmaps;
+        }
 
         // start the draw helper to enable shape creation and editing
         var drawHelper = new DrawHelper(cesiumWidget);
@@ -105,11 +104,16 @@ var CesiumMaps = (function() {
         var gl = this;
 
         gl.setCenter = function(lat, lng) {
-            scene.camera.setView({destination: Cesium.Cartesian3.fromDegrees(lng, lat, getHeight())});
+           // scene.camera.position = Cesium.Cartesian3.fromDegrees(lng, lat, getHeight());
+            var position = Cesium.Cartesian3.fromDegrees(lng, lat, getHeight(), ellipsoid);
+            scene.camera.position = position;
+            scene.camera.flyTo({
+                destination : position
+            });
         }
 
         gl.getCenter = function() {
-            scene.camera.lookDown();
+            scene.camera.look(scene.camera.position, Cesium.Math.toRadians(360));
             return _.convertPath([scene.camera.position]);
         }
 
@@ -148,7 +152,9 @@ var CesiumMaps = (function() {
         }
 
         gl.setBounds = function(swLat, swLng, neLat, neLng) {
-            scene.camera.setView({destination: Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat)});
+            //scene.camera.viewRectangle(Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat), ellipsoid);
+            var rectangle = Cesium.Rectangle.fromDegrees(swLng, swLat, neLng, neLat);
+            scene.camera.flyTo({destination:rectangle} );
         }
 
         gl.getMapTypeIds = function() {
@@ -285,6 +291,14 @@ var CesiumMaps = (function() {
             }
         }
 
+        gl.showFullscreen = function(enable) {
+           //Shows or hides the fullscreen control in google maps
+        }
+
+        gl.showZoom = function(enable) {
+            //Shows or hides the zoom control in google maps
+        }
+
         gl.displayCoordinates = function(display) {
 
             if(this.coordinatesOverlay == undefined) {
@@ -334,7 +348,8 @@ var CesiumMaps = (function() {
         gl.addZoomOnShift = function(callback) {
             var globe = this;
             var map = this.map;
-            container.parentElement.addEventListener("mousedown", function(event) {
+
+            /*container.parentElement.addEventListener("mousedown", function(event) {
                 if(event.shiftKey) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -354,7 +369,32 @@ var CesiumMaps = (function() {
                             });
                     }
                 }
-            }, true);
+            }, true);*/
+
+            // Got from https://gist.github.com/theplatapi/0a7d789afc8028a3c20b
+            var screenSpaceEventHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            scene.screenSpaceCameraController.enableLook = false;
+
+            screenSpaceEventHandler.setInputAction(function startClickShift() {
+
+                var cartesian = scene.camera.pickEllipsoid(new Cesium.Cartesian2(event.clientX, event.clientY), ellipsoid);
+                if(cartesian) {
+                    dragging = true;
+                    drawHelper.startDrawingZoomExtent(ellipsoid.cartesianToCartographic(cartesian),
+                        {strokeColor: "#ff0000",
+                            strokeOpacity: 0.9,
+                            strokeThickness: 1,
+                            fillColor: "#ffffff",
+                            fillOpacity: 0.1,
+                            callback: function(extent) {
+                                callback(Cesium.Math.toDegrees(extent.south), Cesium.Math.toDegrees(extent.west), Cesium.Math.toDegrees(extent.north), Cesium.Math.toDegrees(extent.east));
+                            }
+
+                        });
+                }
+
+            }, Cesium.ScreenSpaceEventType.LEFT_DOWN, Cesium.KeyboardEventModifier.SHIFT);
+
         }
 
         gl.openInfoWindow = function(lat, lng, content) {
@@ -1192,10 +1232,10 @@ var CesiumMaps = (function() {
         });
 
         // force edit to true
-        var parentEditMode = surface.setEditMode;
+        /*var parentEditMode = surface.setEditMode;
         surface.setEditMode = function() {
             parentEditMode(true);
-        }
+        }*/
 
         globe.addOverlay(this);
 
@@ -1389,7 +1429,7 @@ var CesiumMaps = (function() {
 
     }
 
-    _.TMSLayer.prototype = Cesium.createTileMapServiceImageryProvider();
+    _.TMSLayer.prototype = new Cesium.createTileMapServiceImageryProvider({url:""});
 
     _.TMSLayer.prototype.formatUrl = function(x, y, level) {
         return this._url.replace("$z", level).replace("$y", this._yFlip ? y : (1 << level) - y - 1).replace("$x", x);
@@ -1440,28 +1480,45 @@ var CesiumMaps = (function() {
         lURL += "&format=image/png";
         // for the projections that require axis inversion under version 3
         var invertAxisOrder = version3 == true && srs == "EPSG:4326";
+        // either 4326 or 3857
+        var tilingScheme = srs == "EPSG:4326" ? new Cesium.GeographicTilingScheme() : new Cesium.WebMercatorTilingScheme();
 
         // rewrite the requestImage to handle WMS 1.3.0
         var proxy = new _.Proxy(lURL + "&BBOX=");
+
         provider.requestImage = function (x, y, level) {
             //create the Bounding box string
             // handles 1.3.0 wms by ordering lat, lng instead of lng, lat
             var bbox;
-            var nativeExtent = this._tileProvider._tilingScheme.tileXYToNativeRectangle(x, y, level);
+            var nativeExtent = tilingScheme.tileXYToNativeRectangle(x, y, level);
             if (invertAxisOrder) {
                 bbox = nativeExtent.south + "," + nativeExtent.west + "," + nativeExtent.north + "," + nativeExtent.east;
             } else {
                 bbox = nativeExtent.west + "," + nativeExtent.south + "," + nativeExtent.east + "," + nativeExtent.north;
             }
             //base WMS URL
-            return Cesium.ImageryProvider.loadImage(this, proxy.getURL(lURL + "&BBOX=" + bbox)); // set bounding box
+            var requestUrl = proxy.getURL(lURL + "&BBOX=" + bbox);
+            if(this._interceptor) {
+                request = {
+                    url: requestUrl,
+                    setRequestHeader: function (keyname, value) {
+                        request["headers"][keyname] = value
+                    },
+                    headers: {
+                    }
+                };
+                this._interceptor(request);
+                return Cesium.ImageryProvider.loadImage(this, new Cesium.Resource(request));
+            } else
+                return Cesium.ImageryProvider.loadImage(this, requestUrl);
         }
         return provider;
     }
 
     _.uniWMSLayer = function(globe, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng) {
         this.globe = globe;
-        this.layer = new Cesium.ImageryLayer(createWMSProvider(globe, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng));
+        this.provider = createWMSProvider(globe, baseUrl, version, layers, copyright, styles, srs, swLat, swLng, neLat, neLng);
+        this.layer = new Cesium.ImageryLayer(this.provider);
         globe.addImageryLayer(this.layer);
         // keep a record for the clean up
         this.globe.addOverlay(this);
@@ -1471,6 +1528,10 @@ var CesiumMaps = (function() {
 
     _.uniWMSLayer.prototype.activateClipping = function(activate) {
         // do nothing as it is not supported yet
+    }
+
+    _.uniWMSLayer.prototype.setInterceptor = function(interceptor) {
+        this.provider._interceptor = interceptor;
     }
 
     return _;

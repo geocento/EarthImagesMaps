@@ -1687,8 +1687,14 @@ var googleMapsV3 = (function() {
                 // rearrange bounds so that they fit the rectangle bounds format
                 var topLeft = event.latLng;
                 var bottomRight = point;
-                setRectangle(topLeft, bottomRight);
-                map2D.theTooltip.show(event.latLng, "<p>Position: " + event.latLng.toUrlValue(4) + "</p><p>Click to complete</p>");
+                var longitude = Math.abs(topLeft.lng() - bottomRight.lng());
+                //change for SEDAS for the rectangle not to be over 180
+                if(longitude < 180) {
+                    setRectangle(topLeft, bottomRight);
+                    map2D.theTooltip.show(event.latLng, "<p>Position: " + event.latLng.toUrlValue(4) + "</p><p>Click to complete</p>");
+                }
+                else
+                    complete();
             }
 
             function complete(event) {
@@ -2564,6 +2570,8 @@ var googleMapsV3 = (function() {
             }
 
             WMSLayerClipped.prototype.activateClipping = function(activate) {
+                if(activate == this.activated) return;
+                this.activated = activate;
                 if(activate) {
                     // initialise clip bounds
                     this.clipBounds = new gm.LatLngBounds(bounds.getSouthWest(),
@@ -2666,6 +2674,8 @@ var googleMapsV3 = (function() {
                 div.style.backgroundSize = 'cover';
                 containerDiv.appendChild(div);
                 var _self = this;
+                var tile_id = coord.x + '_' + coord.y;
+                div.tile_id = tile_id;
                 containerDiv.updateClip = function() {
                     // remove border by default
                     if(div.border) {
@@ -2679,8 +2689,9 @@ var googleMapsV3 = (function() {
                     var isClipping = clipBounds != bounds;
                     var width = tileSize, height = tileSize;
                     // check the tile is within the bounds
-                    if(!tileLatLng.intersects(clipBounds)) {
-                        url = "http://maps.gstatic.com/intl/en_us/mapfiles/transparent.png";
+                    var tileOutsideBounds = !tileLatLng.intersects(clipBounds);
+                    if(tileOutsideBounds) {
+                        div.style.background = "url(https://maps.gstatic.com/intl/en_us/mapfiles/transparent.png)";
                     } else {
                         // convert from wgs84 lat,lng to new srs coordinates
                         var swConverted = srsConversion(new gm.LatLng(Math.min(swCoord.lat(), neCoord.lat()), Math.min(swCoord.lng(), neCoord.lng())));
@@ -2747,24 +2758,27 @@ var googleMapsV3 = (function() {
                                 div.border = border;
                             }
                         }
-                    }
-                    if(_self._interceptor) {
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', url);
-                        xhr.responseType = 'blob';
-                        xhr.onload = function() {
-                            if (xhr.status < 300) {
-                                var blobUrl = URL.createObjectURL(this.response);
-                                div.style.backgroundImage = "url(" + blobUrl + ")";
-                                // URL.revokeObjectURL(blobUrl);
+                        if(_self._interceptor) {
+                            if(containerDiv.urlBlob) div.style.backgroundImage = containerDiv.urlBlob;
+                            else {
+                                var xhr = new XMLHttpRequest();
+                                xhr.open('GET', url);
+                                xhr.responseType = 'blob';
+                                xhr.onload = function () {
+                                    if (xhr.status < 300) {
+                                        var blobUrl = "url(" + URL.createObjectURL(this.response) + ")";
+                                        div.style.backgroundImage = blobUrl;
+                                        containerDiv.urlBlob = blobUrl;
+                                    }
+                                };
+                                _self._interceptor(xhr);
+                                xhr.send();
                             }
-                        };
-                        _self._interceptor(xhr);
-                        xhr.send();
+                        }
+                        else div.style.backgroundImage = "url('" + url + "')";
+                        div.style.width = Math.floor(width) + 'px';
+                        div.style.height = height + 'px';
                     }
-                    else div.style.backgroundImage = "url('" + url + "')";
-                    div.style.width = Math.floor(width) + 'px';
-                    div.style.height = height + 'px';
                 }
                 containerDiv.updateClip();
                 updateOpacity(containerDiv, this.opacity);
@@ -2772,10 +2786,11 @@ var googleMapsV3 = (function() {
                 return containerDiv;
             };
 
-            WMSLayerClipped.prototype.releaseTile = function(node) {
-                var index = this.tiles.indexOf(node);
+            WMSLayerClipped.prototype.releaseTile = function(tile) {
+                var index = this.tiles.indexOf(tile);
                 if(index > -1) {
                     this.tiles.splice(index, 1);
+                    if(tile.urlBlob) URL.revokeObjectURL(tile.urlBlob);
                 }
             }
 

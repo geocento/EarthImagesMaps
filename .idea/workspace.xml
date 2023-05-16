@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="688a0210-0a1a-4758-9e13-8e9276bba8f5" name="Changes" comment="Changes to support adding header to wms requests">
+      <change afterPath="$PROJECT_DIR$/img/dragClipIcon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Images/bing_maps_credit.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Images/cesium_credit.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Images/google_earth_credit.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Images/ion-credit.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/LensFlare/DirtMask.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/LensFlare/StarBurst.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/airfield.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/airport.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/alcohol-shop.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/america-football.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/art-gallery.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/bakery.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/bank.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/bar.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/baseball.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/basketball.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/beer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/bicycle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/building.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/bus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/cafe.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/camera.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/campsite.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/car.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/cemetery.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/cesium.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/chemist.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/cinema.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/circle-stroked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/circle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/city.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/clothing-store.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/college.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/commercial.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/cricket.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/cross.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/dam.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/danger.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/disability.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/dog-park.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/embassy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/emergency-telephone.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/entrance.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/farm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/fast-food.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/ferry.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/fire-station.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/fuel.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/garden.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/gift.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/golf.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/grocery.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/hairdresser.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/harbor.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/heart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/heliport.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/hospital.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/ice-cream.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/industrial.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/land-use.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/laundry.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/library.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/lighthouse.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/lodging.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/logging.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/london-underground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/marker-stroked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/marker.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/minefield.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/mobilephone.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/monument.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/museum.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/music.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/oil-well.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/park.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/park2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/parking-garage.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/parking.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/pharmacy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/pitch.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/place-of-worship.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/playground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/police.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/polling-place.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/post.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/prison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/rail-above.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/rail-light.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/rail-metro.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/rail-underground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/rail.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/religious-christian.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/religious-jewish.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/religious-muslim.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/restaurant.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/roadblock.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/rocket.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/school.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/scooter.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/shop.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/skiing.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/slaughterhouse.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/soccer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/square-stroked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/square.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/star-stroked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/star.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/suitcase.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/swimming.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/telephone.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/tennis.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/theatre.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/toilets.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/town-hall.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/town.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/triangle-stroked.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/triangle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/village.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/warehouse.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/waste-basket.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/water.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/wetland.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/maki/zoo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/Textures/pin.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Assets/approximateTerrainHeights.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/ThirdParty/Workers/deflate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/ThirdParty/Workers/draco_decoder.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/ThirdParty/Workers/draco_wasm_wrapper.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/ThirdParty/Workers/inflate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/ThirdParty/draco_decoder.wasm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Cesium3DTilesInspector/Cesium3DTilesInspector.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/ImageryProviders/blueMarble.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/ImageryProviders/earthAtNight.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/ImageryProviders/mapboxSatellite.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/ImageryProviders/mapboxStreets.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/ImageryProviders/mapboxTerrain.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/ImageryProviders/sentinel-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/Images/TerrainProviders/CesiumWorldTerrain.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/InfoBox/InfoBoxDescription.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/NavigationHelpButton/lighter.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/ProjectionPicker/ProjectionPicker.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Widgets/VRButton/VRButton.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createCoplanarPolygonGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createCoplanarPolygonOutlineGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createFrustumGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createFrustumOutlineGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createGroundPolylineGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createPlaneGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createPlaneOutlineGeometry.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createVectorTileGeometries.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createVectorTilePoints.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createVectorTilePolygons.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createVectorTilePolylines.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/createVerticesFromGoogleEarthEnterpriseBuffer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/decodeDraco.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/decodeGoogleEarthEnterprisePacket.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/Cesium/Workers/transcodeCRNToDXT.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/arcgismaps.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestMap.html" beforeDir="false" afterPath="$PROJECT_DIR$/TestMap.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/cesium.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/cesium.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/maps.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/maps.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/production/cesiumv0.7.js" beforeDir="false" afterPath="$PROJECT_DIR$/production/cesiumv0.7.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/production/mapsv0.7.js" beforeDir="false" afterPath="$PROJECT_DIR$/production/mapsv0.7.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2LMhpgjsd1IUjblHZszDHYoPVL6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/js" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Pc\IdeaProjects\EarthImagesMaps\js" />
+      <recent name="C:\Users\Pc\IdeaProjects\EarthImagesMaps\img" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="TestMap.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/EarthImagesMaps/TestMap.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.TestMap.html" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="688a0210-0a1a-4758-9e13-8e9276bba8f5" name="Changes" comment="" />
+      <created>1675687044671</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1675687044671</updated>
+      <workItem from="1675687046010" duration="1494000" />
+      <workItem from="1680603026990" duration="12708000" />
+      <workItem from="1683214461099" duration="907000" />
+      <workItem from="1683647750823" duration="8442000" />
+      <workItem from="1683710315825" duration="13086000" />
+      <workItem from="1683749627506" duration="1223000" />
+    </task>
+    <task id="LOCAL-00001" summary="Changes to support adding header to wms requests">
+      <created>1680642828088</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1680642828088</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="Changes to support adding header to wms requests" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes to support adding header to wms requests" />
+  </component>
+</project>

@@ -64,12 +64,17 @@ and open the template in the editor.
       <script type="application/javascript">
           var mapsConfig = {
               googleMapId: "roadmap",
-              bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf'
+              bingMapsAPIKey: 'AnWRhVJTAYmWG0laRFk_Tq3nBxb4BM718C1IUyl0uCq1NkM9XlXkjKjDwNLMfTNf',
+              terrainProvider: {
+                // specify the protocol otherwise there will be issues with CORS
+                url: 'https://terrain.geocento.com/',
+                credits: 'SRTM 900m tiles from NASA'
+              }
           };
       </script>
 
   </head>
-  <body onload="start(googleMapsV3)">
+  <body onload="start(CesiumMaps)">
 
     <div id="container"></div>
     <div id="toolbar">
@@ -329,17 +334,15 @@ and open the template in the editor.
                         },
                         testClippedWMS: function() {
                             if(!uniWMS) {
-                                uniWMS = new library.uniWMSLayer(map, "http://ogc.bgs.ac.uk/fcgi-bin/exemplars/BGS_Bedrock_and_Superficial_Geology/wms?", "1.1.1", "GBR_BGS_625k_BLT", "British Geographic Survey",
-                                    null, "EPSG:3857", 45.0, -20.0, 60.0, 10.0);
-                                uniWMS.setVisible(true);
-                                window.setInterval(function() {
-                                    var opacity = uniWMS.getOpacity() - 0.1;
-                                    if(opacity < 0) {
-                                        opacity = 1.0;
-                                    }
-                                    uniWMS.setOpacity(opacity);
-                                }, 1000);
-                                uniWMS.setOpacity(0.5);
+                              uniWMS = new library.uniWMSLayer(map,
+                                      "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?", //"https://demowls.geocento.com/map/wms/5576a6ac-d744-4e22-9b30-dca10505df1d/?token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJmZ2lWRmFhWWdpRldUdU40IiwiaWF0IjoxNjgwNjA2NzA4LCJzdWIiOiI1NTc2YTZhYy1kNzQ0LTRlMjItOWIzMC1kY2ExMDUwNWRmMWQiLCJpc3MiOiJFSU5FTyIsIm1hcGFjY2VzcyI6IioiLCJleHAiOjE2ODA2MTM5MDh9.8R7G1Aeb7iKLWnZM2rCdZzMLFh_AJ0q7HsZdODQ3fdU&", //"http://192.168.2.42:8080/CMLFMC"
+                                      "1.1.1", "GEBCO_LATEST_SUB_ICE_TOPO", "Quicklook", null, "EPSG:3857", -90, -180, 90, 180);
+                              uniWMS.setInterceptor(function(xhr) {
+                                xhr.setRequestHeader('Authorization', 'Bearer 1223345667700989');
+                                console.log("Called interceptor");
+                              });
+                              uniWMS.setVisible(true);
+                              uniWMS.setOpacity(1.0); //Math.random());
                             }
                             activateClipping = !activateClipping;
                             uniWMS.activateClipping(activateClipping);
