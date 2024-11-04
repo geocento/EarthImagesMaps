@@ -33,7 +33,7 @@
 
         <apply executable="java" force="true">
             <arg line="-jar"></arg>
-            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg path="C:/Users/Pc/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
             <arg line="-o"></arg>
             <targetfile></targetfile>
             <srcfile></srcfile>
@@ -60,7 +60,7 @@
 
         <apply executable="java" force="true">
             <arg line="-jar"></arg>
-            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg path="C:/Users/Pc/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
             <arg line="-o"></arg>
             <targetfile></targetfile>
             <srcfile></srcfile>

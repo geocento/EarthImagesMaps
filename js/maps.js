@@ -146,19 +146,13 @@ var googleMapsV3 = (function() {
 
     function createGlassOverlay(map) {
 
-        function glassOverlay(map) {
-            gm.Rectangle.call(this, {
-                bounds: new gm.LatLngBounds(new gm.LatLng(-89.9, -179.99999), new gm.LatLng(89.9, 179.99999)),
-                map: map,
-                strokeOpacity: 0.0,
-                fillOpacity: 0.0,
-                zIndex: 10000
-            });
-        }
-
-        glassOverlay.prototype = new gm.Rectangle();
-
-        return new glassOverlay(map);
+        return new gm.Rectangle({
+            bounds: new gm.LatLngBounds(new gm.LatLng(-89.9, -179.99999), new gm.LatLng(89.9, 179.99999)),
+            map: map,
+            strokeOpacity: 0.0,
+            fillOpacity: 0.0,
+            zIndex: 10000
+        });
     }
 
     _.map2D = (function() {
@@ -1687,6 +1681,9 @@ var googleMapsV3 = (function() {
                 // rearrange bounds so that they fit the rectangle bounds format
                 var topLeft = event.latLng;
                 var bottomRight = point;
+                setRectangle(topLeft, bottomRight);
+                map2D.theTooltip.show(event.latLng, "<p>Position: " + event.latLng.toUrlValue(4) + "</p><p>Click to complete</p>");
+/*
                 var longitude = Math.abs(topLeft.lng() - bottomRight.lng());
                 //change for SEDAS for the rectangle not to be over 180
                 if(longitude < 180) {
@@ -1695,6 +1692,7 @@ var googleMapsV3 = (function() {
                 }
                 else
                     complete();
+*/
             }
 
             function complete(event) {
